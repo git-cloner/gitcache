@@ -1,4 +1,4 @@
-module github.com/codechain/gitcache
+module github.com/git-cloner/gitcache
 
 go 1.14
 
