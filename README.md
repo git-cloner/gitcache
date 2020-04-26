@@ -13,7 +13,7 @@ go build
 
 ## run
 
-​	./gitcache -b /var/gitcache
+nohup ./gitcache  -b /var/gitcache > gitcache.log 2>&1 &
 
 ## use
 
