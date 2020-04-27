@@ -219,6 +219,12 @@ func hdrNocache(w http.ResponseWriter) {
 	w.Header().Set("Cache-Control", "no-cache, max-age=0, must-revalidate")
 }
 
+func cors(w http.ResponseWriter) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("content-type", "application/json")
+}
+
 func CacheSysHandlerFunc(r *http.Request) string {
 	if strings.Contains(r.URL.Path, "gitcache/system/info") {
 		return GetLocalMirrorsInfo()
@@ -231,6 +237,7 @@ func RequestHandler(basedir string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("client send git request: %s %s %s %s\n", r.RemoteAddr, r.Method, r.URL.Path, r.Proto)
 		if strings.Contains(r.URL.Path, "gitcache/system") || strings.Contains(r.URL.Path, "/favicon.ico") {
+			cors(w)
 			w.WriteHeader(200)
 			w.Write([]byte(CacheSysHandlerFunc(r)))
 			return
