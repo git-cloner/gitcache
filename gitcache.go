@@ -221,7 +221,7 @@ func hdrNocache(w http.ResponseWriter) {
 
 func cors(w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("content-type", "application/json")
 }
 
