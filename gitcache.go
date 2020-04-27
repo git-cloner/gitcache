@@ -240,7 +240,11 @@ func RequestHandler(basedir string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("client send git request: %s %s %s %s\n", r.RemoteAddr, r.Method, r.URL.Path, r.Proto)
 		if strings.Contains(r.URL.Path, "gitcache/system") || strings.Contains(r.URL.Path, "/favicon.ico") {
-			cors(w)
+			w.Header().Set("Access-Control-Allow-Origin", "*") 
+			w.Header().Add("Access-Control-Allow-Headers", "Content-Type,AccessToken,X-CSRF-Token, Authorization, Token")
+			w.Header().Add("Access-Control-Allow-Credentials", "true")
+			w.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE") 
+			w.Header().Set("content-type", "application/json;charset=UTF-8")
 			w.WriteHeader(200)
 			w.Write([]byte(CacheSysHandlerFunc(r)))
 			return
