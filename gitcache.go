@@ -25,6 +25,9 @@ func parseHttpParams(r *http.Request) HttpParams {
 		panic(err)
 	}
 	str := strings.Split(u.Path, "/")
+	if len(str) < 4 {
+		panic("bad request params")
+	}
 	_Repository := str[1] + "/" + str[2] + "/" + str[3]
 	var _Gitservice = strings.Replace(u.RawQuery, "service=", "", -1)
 	if _Gitservice == "" {
@@ -216,9 +219,22 @@ func hdrNocache(w http.ResponseWriter) {
 	w.Header().Set("Cache-Control", "no-cache, max-age=0, must-revalidate")
 }
 
+func CacheSysHandlerFunc(r *http.Request) string {
+	if strings.Contains(r.URL.Path, "gitcache/system/info") {
+		return GetLocalMirrorsInfo()
+	} else {
+		return "ok"
+	}
+}
+
 func RequestHandler(basedir string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("client send git request: %s %s %s %s\n", r.RemoteAddr, r.Method, r.URL.Path, r.Proto)
+		if strings.Contains(r.URL.Path, "gitcache/system") || strings.Contains(r.URL.Path, "/favicon.ico") {
+			w.WriteHeader(200)
+			w.Write([]byte(CacheSysHandlerFunc(r)))
+			return
+		}
 		var httpParams HttpParams = parseHttpParams(r)
 		log.Printf("git params: %+v\n", httpParams)
 		if ((r.Method == "GET") && (httpParams.IsInfoReq)) || ((r.Method != "GET") && (!httpParams.IsInfoReq)) {
