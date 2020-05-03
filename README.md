@@ -1,9 +1,13 @@
-# gitcache
-git clone cache
+# Gitcache
+github.com clone cache
+
+use git http  protocol to proxy git clone.
+
+When the local cache does not exist, the clone request is redirected to github.com, and the mirror is created at same time, and the next time it is cloned, then clone from the local mirror .
 
 ## build
 
-install go lang environment,and
+install go environment,and
 
 ```shell
 export GO111MODULE=on
@@ -13,8 +17,10 @@ go build
 
 ## run
 
-nohup ./gitcache  -b /var/gitcache > gitcache.log 2>&1 &
+./gitcache  -b /var/gitcache 
 
 ## use
 
 git clone http://127.0.0.1:5000/github.com/yourrepository
+
+and please try https://gitclone.com/

@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"path"
 	"strings"
+	"time"
 )
 
 type HttpParams struct {
@@ -133,22 +134,39 @@ func ifExistsLocalCache(local string) (bool, string) {
 	}
 }
 
-func mirrorFromRemote(remote string, local string) string {
+func ifValidLocalCache(local string) bool {
+	var localExists, err = ifExistsLocalCache(local)
+	if !localExists {
+		return false
+	}
+	if err != "" {
+		return false
+	}
+	return true
+}
+
+func mirrorFromRemote(remote string, local string) bool {
 	var localExists, err = ifExistsLocalCache(local)
 	if err != "" {
-		return err
+		log.Printf("valid local cache! " + err)
+		return false
 	}
 	if localExists {
 		log.Printf("valid local cache! .git path exists")
-		return ""
+		return true
 	} else {
 		log.Printf("valid local cache! .git path not exists")
 		err = cloneMirrorFromRemote(remote, local)
 		if err != "" {
 			log.Printf("git command: clone from remote error : %s\n", err)
 		}
-		return err
+		return false
 	}
+}
+
+func deferMirrorFromRemote(remote string, local string) bool {
+	time.Sleep(time.Duration(10) * time.Second)
+	return mirrorFromRemote(remote, local)
 }
 
 func execGitCommand(cmd string, version string, args []string) []byte {
@@ -193,7 +211,7 @@ func execShelldPipe(cmd string, args []string, w http.ResponseWriter, r *http.Re
 	if !ok {
 		panic("execute shell with pipe expected http.ResponseWriter to be an http.Flusher")
 	}
-	p := make([]byte, 1024)
+	p := make([]byte, 20480)
 	for {
 		n_read, err := stdout.Read(p)
 		if err == io.EOF {
@@ -213,6 +231,56 @@ func execShelldPipe(cmd string, args []string, w http.ResponseWriter, r *http.Re
 	command.Wait()
 }
 
+func rinetGitRequest(w http.ResponseWriter, r *http.Request) {
+	/*var bodyBytes []byte
+	bodyBytes, _ = ioutil.ReadAll(r.Body)
+	fmt.Printf("%s", bodyBytes)
+	r.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+	*/
+	url := "https:/" + r.URL.RequestURI()
+	log.Printf("redirect to github.com : %v,%v\n", url, r.Method)
+	client := &http.Client{}
+	req, err := http.NewRequest(r.Method, url, r.Body)
+	for k, v := range r.Header {
+		for _, vv := range v {
+			req.Header.Add(k, vv)
+		}
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return
+	}
+	defer resp.Body.Close()
+	for k, v := range resp.Header {
+		for _, vv := range v {
+			w.Header().Add(k, vv)
+		}
+	}
+	//
+	flusher, ok := w.(http.Flusher)
+	if !ok {
+		panic("redirect to github.com to be an http.Flusher")
+	}
+	p := make([]byte, 20480)
+	for {
+		n_read, err := resp.Body.Read(p)
+		//log.Printf("clone from github.com direct : %v,%v\n", url, n_read)
+		if n_read > 0 {
+			n_write, err := w.Write(p[:n_read])
+			if err != nil {
+				panic("redirect to github.com with pipe error:" + err.Error())
+			}
+			if n_read != n_write {
+				panic("redirect to github.com with pipe failed to write data")
+			}
+			flusher.Flush()
+		}
+		if err == io.EOF {
+			break
+		}
+	}
+}
+
 func hdrNocache(w http.ResponseWriter) {
 	w.Header().Set("Expires", "Fri, 01 Jan 1980 00:00:00 GMT")
 	w.Header().Set("Pragma", "no-cache")
@@ -220,9 +288,9 @@ func hdrNocache(w http.ResponseWriter) {
 }
 
 func cors(w http.ResponseWriter) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")             //允许访问所有域
-	w.Header().Add("Access-Control-Allow-Headers", "Content-Type") //header的类型
-	w.Header().Set("content-type", "application/json")             //返回数据格式是json
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("content-type", "application/json")
 }
 
 func CacheSysHandlerFunc(r *http.Request) string {
@@ -268,24 +336,32 @@ func RequestHandler(basedir string) http.HandlerFunc {
 			local = local + ".git"
 		}
 		if httpParams.IsInfoReq {
-			log.Printf("git mirror from remote : %s %s\n", remote, local)
-			err := mirrorFromRemote(remote, local)
-			if err != "" {
-				w.WriteHeader(500)
-				w.Write([]byte(err))
-			} else {
+			if ifValidLocalCache(local) {
 				refs := execGitCommand(httpParams.Gitservice, "", []string{"--stateless-rpc", "--advertise-refs", local})
 				hdrNocache(w)
 				w.Header().Set("Content-Type", fmt.Sprintf("application/x-%s-advertisement", httpParams.Gitservice))
 				w.WriteHeader(200)
 				w.Write([]byte("001e# service=git-upload-pack\n0000"))
 				w.Write(refs)
+			} else {
+				hdrNocache(w)
+				//redirect to github.com clone
+				rinetGitRequest(w, r)
 			}
 		} else {
-			hdrNocache(w)
-			w.Header().Set("Content-Type", fmt.Sprintf("application/x-%s-result", httpParams.Gitservice))
-			w.WriteHeader(200)
-			execShelldPipe(httpParams.Gitservice, []string{"--stateless-rpc", local}, w, r)
+			if ifValidLocalCache(local) {
+				hdrNocache(w)
+				w.Header().Set("Content-Type", fmt.Sprintf("application/x-%s-result", httpParams.Gitservice))
+				w.WriteHeader(200)
+				execShelldPipe(httpParams.Gitservice, []string{"--stateless-rpc", local}, w, r)
+			} else {
+				hdrNocache(w)
+				//redirect to github.com clone
+				rinetGitRequest(w, r)
+				//mirror async delay 10 second
+				log.Printf("git mirror from remote : %s %s\n", remote, local)
+				go deferMirrorFromRemote(remote, local)
+			}
 		}
 		return
 	}
