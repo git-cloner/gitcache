@@ -85,7 +85,7 @@ func GetMirrorProgress(repoName string) string {
 
 func Cron() {
 	c := cron.New()
-	c.AddFunc("0 0 */2 * * *", func() {
+	c.AddFunc("0 0 0,2.4,6,20,22 * * *", func() {
 		//c.AddFunc("0 */1 * * * *", func() {
 		SyncLocalMirrorFromRemote()
 	})
