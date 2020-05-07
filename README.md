@@ -23,4 +23,5 @@ go build
 
 git clone http://127.0.0.1:5000/github.com/yourrepository
 
-and please try https://gitclone.com/ and use cgit client. https://github.com/git-cloner/gitcache/releases/download/v0.1/cgit-release.zip
+and please try https://gitclone.com/ 
+and use cgit client. https://github.com/git-cloner/gitcache/releases/download/v0.1/cgit-release.zip
