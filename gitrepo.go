@@ -79,10 +79,6 @@ func GetLocalMirrorsInfo() string {
 	return string(data)
 }
 
-func GetMirrorProgress(repoName string) string {
-	return ""
-}
-
 func Cron() {
 	c := cron.New()
 	c.AddFunc("0 0 0,2.4,6,20,22 * * *", func() {
