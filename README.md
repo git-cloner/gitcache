@@ -25,7 +25,15 @@ go build
 
 ## run
 
-./gitcache  -b /var/gitcache 
+```shell
+# -b git cahce base path
+#linux
+./gitcache  -b /var/gitcache
+#windows
+gitcache -b d:\temp
+```
+
+ 
 
 ## use
 
