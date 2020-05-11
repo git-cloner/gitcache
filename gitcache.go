@@ -112,7 +112,10 @@ func validLocalCache(local string) bool {
 	if err == "" {
 		return true
 	} else {
-		os.RemoveAll(local)
+		//avoid rm -fr /* !!!
+		if strings.Contains(local, g_Basedir) && !(local == g_Basedir) {
+			os.RemoveAll(local)
+		}
 		return false
 	}
 }
