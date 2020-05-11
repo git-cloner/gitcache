@@ -299,6 +299,12 @@ func cors(w http.ResponseWriter) {
 func CacheSysHandlerFunc(r *http.Request) string {
 	if strings.Contains(r.URL.Path, "gitcache/system/info") {
 		return GetLocalMirrorsInfo()
+	} else if strings.Contains(r.URL.Path, "gitcache/system/mirror") {
+		repository := strings.Replace(r.URL.Path, "gitcache/system/mirror", "", -1)
+		remote := "https://" + repository
+		local := path.Join(g_Basedir, repository)
+		mirrorFromRemote(remote, local)
+		return "ok"
 	} else {
 		return "ok"
 	}
