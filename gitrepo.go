@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"strings"
 
 	"github.com/robfig/cron"
@@ -77,6 +78,27 @@ func GetLocalMirrorsInfo() string {
 	info.Size = 0
 	data, _ := json.Marshal(info)
 	return string(data)
+}
+
+func httpPost(url string, contentType string, body string) string {
+	resp, err := http.Post(url, contentType, strings.NewReader(body))
+	if err != nil {
+		return err.Error()
+	}
+	defer resp.Body.Close()
+	rbody, err1 := ioutil.ReadAll(resp.Body)
+	if err1 != nil {
+		return err1.Error()
+	}
+	return string(rbody)
+}
+
+func BroadCastGitCloneCommandToChain(repository string) {
+	log.Println("broadcast git clone command to chain : " + repository)
+	var body = "{\"privatekey\":\"f45b1d6e433195a0e70a09ffaf59d4c71bc9c49f84cfe63fd455b3c34a8fcd2d246ea5c7d47cf6027e4ec99b27dade8e23bb811a07b90228c3f27f744c4d1322\"," +
+		"\"publickey\":\"" + "246EA5C7D47CF6027E4EC99B27DADE8E23BB811A07B90228C3F27F744C4D1322\"," +
+		"\"msg\":\"" + "git clone " + repository + "\"}"
+	go httpPost("http://172.16.62.48:4000/broadcast/msg", "application/json", body)
 }
 
 func Cron() {

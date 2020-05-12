@@ -169,7 +169,12 @@ func mirrorFromRemote(remote string, local string) bool {
 
 func deferMirrorFromRemote(remote string, local string) bool {
 	time.Sleep(time.Duration(10) * time.Second)
-	return mirrorFromRemote(remote, local)
+	localExists := mirrorFromRemote(remote, local)
+	if !localExists {
+		time.Sleep(time.Duration(10) * time.Second)
+		BroadCastGitCloneCommandToChain(remote)
+	}
+	return localExists
 }
 
 func execGitCommand(cmd string, version string, args []string) []byte {
@@ -297,12 +302,17 @@ func cors(w http.ResponseWriter) {
 }
 
 func CacheSysHandlerFunc(r *http.Request) string {
+	//get local cache repository count for homepage
 	if strings.Contains(r.URL.Path, "gitcache/system/info") {
 		return GetLocalMirrorsInfo()
 	} else if strings.Contains(r.URL.Path, "gitcache/system/mirror") {
-		repository := strings.Replace(r.URL.Path, "gitcache/system/mirror", "", -1)
+		//receive code chain broad cast git clone
+		repository := strings.Replace(r.URL.Path, "gitcache/system/mirror/", "", -1)
 		remote := "https://" + repository
 		local := path.Join(g_Basedir, repository)
+		if !strings.HasSuffix(local, ".git") {
+			local = local + ".git"
+		}
 		mirrorFromRemote(remote, local)
 		return "ok"
 	} else {
