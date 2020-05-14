@@ -25,21 +25,21 @@ type ResultObj struct {
 
 // post {method jsonrpc params id} to 26657/broadcast_tx_commit
 func BroadCastMsg(json MsgTx) ResultObj {
-	// 加密msg
+	// encode msg
 	var base64msg = base64.StdEncoding.EncodeToString([]byte(json.Msg))
-	// 签名
+	// sign
 	_privatekey, _ := hex.DecodeString(json.PrivateKey)
 	var privateKey ed25519.PrivKeyEd25519
 	copy(privateKey[:], _privatekey)
 	signStr, err := privateKey.Sign([]byte(base64msg))
-	// 定义返回结果
+	// define response
 	var res ResultObj
 
 	if err == nil {
-		// 签名成功
+		// sign successfully
 		sign := hex.EncodeToString(signStr)
 		url := "http://localhost:26657"
-		// 定义数据结构
+		// defined struct
 		var baseInitData = "{" +
 			"\"publickey\":\"" + json.PublicKey + "\"," +
 			"\"sign\":\"" + sign + "\"," +
@@ -59,7 +59,7 @@ func BroadCastMsg(json MsgTx) ResultObj {
 		}
 		req.Header.Set("Content-Type", "application/json;charset=UTF-8")
 		client := &http.Client{}
-		// 发送请求
+		// send request
 		resp, err := client.Do(req)
 
 		if err != nil {
@@ -69,7 +69,7 @@ func BroadCastMsg(json MsgTx) ResultObj {
 			return res
 		}
 		defer resp.Body.Close()
-		// 返回响应
+		// reponse result
 		body, err := ioutil.ReadAll((resp.Body))
 		if resp.StatusCode == 200 {
 			res.Result = true
@@ -77,7 +77,7 @@ func BroadCastMsg(json MsgTx) ResultObj {
 			res.Error = ""
 			return res
 		} else {
-			// 签名失败
+			// sign failed
 			res.Result = false
 			res.Info = ""
 			res.Error = err.Error()
