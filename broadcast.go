@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/hex"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -45,7 +44,6 @@ func BroadCastMsg(json MsgTx) ResultObj {
 			"\"sign\":\"" + sign + "\"," +
 			"\"msg\":\"" + base64msg + "\"" +
 			"}"
-		fmt.Println(baseInitData)
 		var baseInput = []byte(baseInitData)
 		var encodingString = base64.StdEncoding.EncodeToString(baseInput)
 		var post = "{\"method\":\"broadcast_tx_commit\",\"jsonrpc\":\"2.0\",\"params\":{\"tx\":\"" + encodingString + "\"},\"id\":\"\"}"
