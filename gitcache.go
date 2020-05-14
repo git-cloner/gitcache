@@ -308,7 +308,7 @@ func CacheSysHandlerFunc(r *http.Request) string {
 	} else if strings.Contains(r.URL.Path, "gitcache/system/mirror") {
 		//receive code chain broad cast git clone
 		repository := strings.Replace(r.URL.Path, "gitcache/system/mirror/", "", -1)
-		remote := "https://" + repository
+		remote := "https:/" + repository
 		local := path.Join(g_Basedir, repository)
 		if !strings.HasSuffix(local, ".git") {
 			local = local + ".git"
