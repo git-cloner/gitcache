@@ -4,5 +4,7 @@ go 1.14
 
 require (
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
+	github.com/gin-gonic/gin v1.6.3
 	github.com/robfig/cron v1.2.0
+	github.com/tendermint/tendermint v0.33.4
 )
