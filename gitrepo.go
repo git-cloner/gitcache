@@ -95,10 +95,15 @@ func httpPost(url string, contentType string, body string) string {
 
 func BroadCastGitCloneCommandToChain(repository string) {
 	log.Println("broadcast git clone command to chain : " + repository)
-	var body = "{\"privatekey\":\"f45b1d6e433195a0e70a09ffaf59d4c71bc9c49f84cfe63fd455b3c34a8fcd2d246ea5c7d47cf6027e4ec99b27dade8e23bb811a07b90228c3f27f744c4d1322\"," +
-		"\"publickey\":\"" + "246EA5C7D47CF6027E4EC99B27DADE8E23BB811A07B90228C3F27F744C4D1322\"," +
-		"\"msg\":\"" + "git clone " + repository + "\"}"
-	go httpPost("http://127.0.0.1:4000/broadcast/msg", "application/json", body)
+	/*var body = "{\"privatekey\":\"f45b1d6e433195a0e70a09ffaf59d4c71bc9c49f84cfe63fd455b3c34a8fcd2d246ea5c7d47cf6027e4ec99b27dade8e23bb811a07b90228c3f27f744c4d1322\"," +
+	"\"publickey\":\"" + "246EA5C7D47CF6027E4EC99B27DADE8E23BB811A07B90228C3F27F744C4D1322\"," +
+	"\"msg\":\"" + "git clone " + repository + "\"}"
+	*/
+	var msgtx MsgTx
+	msgtx.PrivateKey = "f45b1d6e433195a0e70a09ffaf59d4c71bc9c49f84cfe63fd455b3c34a8fcd2d246ea5c7d47cf6027e4ec99b27dade8e23bb811a07b90228c3f27f744c4d1322"
+	msgtx.PublicKey = "246EA5C7D47CF6027E4EC99B27DADE8E23BB811A07B90228C3F27F744C4D1322"
+	msgtx.Msg = "git clone " + repository
+	go BroadCastMsg(msgtx)
 }
 
 func Cron() {
