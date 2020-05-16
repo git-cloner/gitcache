@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
+	"net"
 	"net/http"
 	"strings"
 
@@ -68,12 +69,28 @@ func SyncLocalMirrorFromRemote() {
 	_IS_SYNC = false
 }
 
+func GetOutboundIP() net.IP {
+	conn, err := net.Dial("udp", "8.8.8.8:80")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer conn.Close()
+	localAddr := conn.LocalAddr().(*net.UDPAddr)
+	return localAddr.IP
+}
+
 func GetLocalMirrorsInfo() string {
 	_REPO_COUNT = 0
 	walkDir(g_Basedir, 0, countCacheRepository)
 	info := LocalMirrorsInfo{}
 	info.Count = _REPO_COUNT
-	info.Nodes = ""
+	var ip net.IP = GetOutboundIP()
+	var sip = "node:0"
+	str := strings.Split(ip.String(), ".")
+	if len(str) == 4 {
+		sip = "node:" + str[3]
+	}
+	info.Nodes = sip
 	info.Progress = ""
 	info.Size = 0
 	data, _ := json.Marshal(info)
