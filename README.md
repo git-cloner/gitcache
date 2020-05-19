@@ -15,7 +15,7 @@ git clone https://github.com/git-cloner/gitcache
 cd gitcache
 #linux
 export GO111MODULE=on
-export GOPROXY=https://goproxy.io
+export GOPROXY=https://goproxy.cn
 #windows
 set GO111MODULE=on
 set GOPROXY=https://goproxy.io
@@ -35,7 +35,7 @@ gitcache -b d:\temp
 
  
 
-## use
+## usage
 
 git clone http://127.0.0.1:5000/github.com/git-cloner/gitcache
 
