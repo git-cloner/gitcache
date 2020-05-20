@@ -48,3 +48,9 @@ https://gitclone.com/
 从  https://github.com/git-cloner/gitcache/releases/download/v0.1/cgit-release.zip 下载，只要把git换成cgit即可加速，非常简单。
 
 cgit clone https://github.com/git-cloner/gitcache
+
+## 区块链技术
+
+gitcache的分布式缓存协调共享机制，使用了codechain技术(基于tendermint构建)
+
+[codechain](https://github.com/little51/codechain)
