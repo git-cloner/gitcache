@@ -79,9 +79,16 @@ func GetOutboundIP() net.IP {
 	return localAddr.IP
 }
 
-func GetLocalMirrorsInfo() string {
+func SyncCountCacheRepository() {
 	_REPO_COUNT = 0
 	walkDir(g_Basedir, 0, countCacheRepository)
+	log.Printf("sync count cache repository : %v\n", _REPO_COUNT)
+}
+
+func GetLocalMirrorsInfo() string {
+	if _REPO_COUNT == 0 {
+		walkDir(g_Basedir, 0, countCacheRepository)
+	}
 	info := LocalMirrorsInfo{}
 	info.Count = _REPO_COUNT
 	var ip net.IP = GetOutboundIP()
@@ -121,9 +128,12 @@ func BroadCastGitCloneCommandToChain(repository string) {
 
 func Cron() {
 	c := cron.New()
-	c.AddFunc("0 0 20 * * *", func() {
+	c.AddFunc("0 0 6,20 * * *", func() {
 		//c.AddFunc("0 */1 * * * *", func() {
 		SyncLocalMirrorFromRemote()
+	})
+	c.AddFunc("0 */10 * * * *", func() {
+		SyncCountCacheRepository()
 	})
 	c.Start()
 	log.Println("cron start")
