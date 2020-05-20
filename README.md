@@ -1,4 +1,6 @@
 # Gitcache
+[中文说明](https://github.com/git-cloner/gitcache/blob/master/README_cn.md)
+
 github.com clone cache
 
 use git http  protocol to proxy git clone.

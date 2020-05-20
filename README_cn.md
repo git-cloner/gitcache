@@ -1,4 +1,6 @@
 # Gitcache
+[英文说明](https://github.com/git-cloner/gitcache/blob/master/README.md)
+
 github.com clone 缓存，使用git的http协议代理git clone操作，当本地镜像（缓存）未建立前，clone操作被重定向到github.com，镜像会延时10秒开始创建，缓存建立后，下次clone（其他开发者）时就会利用到本地缓存，每晚自动从github.com更新镜像。
 
 ## 编译
