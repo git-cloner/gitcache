@@ -128,7 +128,7 @@ func BroadCastGitCloneCommandToChain(repository string) {
 
 func Cron() {
 	c := cron.New()
-	c.AddFunc("0 0 2,6,20 * * *", func() {
+	c.AddFunc("0 0 6,15,20 * * *", func() {
 		SyncLocalMirrorFromRemote()
 	})
 	c.AddFunc("0 */10 * * * *", func() {
