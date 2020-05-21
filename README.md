@@ -55,4 +55,4 @@ cgit clone https://github.com/git-cloner/gitcache
 
 use codechain(chain base on tendermint)
 
-[codechain](https://github.com/little51/codechain)
+[https://github.com/little51/codechain](https://github.com/little51/codechain)

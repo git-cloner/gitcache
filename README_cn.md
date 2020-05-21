@@ -53,4 +53,4 @@ cgit clone https://github.com/git-cloner/gitcache
 
 gitcache的分布式缓存协调共享机制，使用了codechain技术(基于tendermint构建)
 
-[codechain](https://github.com/little51/codechain)
+[https://github.com/little51/codechain](https://github.com/little51/codechain)
