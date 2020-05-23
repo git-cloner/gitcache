@@ -17,7 +17,7 @@ func main() {
 	flag.StringVar(&g_Basedir, "b", "/var/gitcache", "default path: /var/gitcache")
 	flag.StringVar(&port, "p", "5000", "default port:5000")
 	flag.Parse()
-	log.Printf("basedir:%v , port:%v", g_Basedir, port)
+	log.Printf("cache basedir:%v , port:%v", g_Basedir, port)
 	//cron
 	Cron()
 	//listen
