@@ -307,6 +307,8 @@ func CacheSysHandlerFunc(r *http.Request) string {
 		return GetLocalMirrorsInfo()
 	} else if strings.Contains(r.URL.Path, "gitcache/system/mirror") {
 		//receive code chain broad cast git clone
+		/*
+		!!!!!!! do nothing because use banlance control
 		repository := strings.Replace(r.URL.Path, "gitcache/system/mirror/", "", -1)
 		remote := "https:/" + repository
 		local := path.Join(g_Basedir, repository)
@@ -314,6 +316,7 @@ func CacheSysHandlerFunc(r *http.Request) string {
 			local = local + ".git"
 		}
 		mirrorFromRemote(remote, local)
+		*/
 		return "ok"
 	} else {
 		return "ok"
