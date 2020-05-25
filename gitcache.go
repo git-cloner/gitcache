@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -307,16 +308,16 @@ func CacheSysHandlerFunc(r *http.Request) string {
 		return GetLocalMirrorsInfo()
 	} else if strings.Contains(r.URL.Path, "gitcache/system/mirror") {
 		//receive code chain broad cast git clone
-		/*
-		!!!!!!! do nothing because use banlance control
-		repository := strings.Replace(r.URL.Path, "gitcache/system/mirror/", "", -1)
-		remote := "https:/" + repository
-		local := path.Join(g_Basedir, repository)
-		if !strings.HasSuffix(local, ".git") {
-			local = local + ".git"
+		var ip net.IP = GetOutboundIP()
+		if !strings.Contains(ip.String(), "192.168.") {
+			repository := strings.Replace(r.URL.Path, "gitcache/system/mirror/", "", -1)
+			remote := "https:/" + repository
+			local := path.Join(g_Basedir, repository)
+			if !strings.HasSuffix(local, ".git") {
+				local = local + ".git"
+			}
+			mirrorFromRemote(remote, local)
 		}
-		mirrorFromRemote(remote, local)
-		*/
 		return "ok"
 	} else {
 		return "ok"
