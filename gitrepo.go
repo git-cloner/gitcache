@@ -82,7 +82,7 @@ func GetOutboundIP() net.IP {
 
 func countCacheRepositoryByIP(url string) int64 {
 	var group_repos_info string
-	var ct int64
+	var ct int64 = 0
 	group_repos_info = httpGet(url)
 	if group_repos_info != "" {
 		var localMirrorsInfo LocalMirrorsInfo
@@ -95,9 +95,13 @@ func countCacheRepositoryByIP(url string) int64 {
 func countAllCacheRepository() int64 {
 	var ct int64
 	ct = countCacheRepositoryByIP("http://192.168.10.54:5000/gitcache/system/info")
+	log.Printf("54:%+v\n", ct)
 	ct = ct + countCacheRepositoryByIP("http://192.168.10.55:5000/gitcache/system/info")
+	log.Printf("55:%+v\n", ct)
 	ct = ct + countCacheRepositoryByIP("http://192.168.10.56:5000/gitcache/system/info")
+	log.Printf("56:%+v\n", ct)
 	ct = ct + countCacheRepositoryByIP("http://192.168.10.57:5000/gitcache/system/info")
+	log.Printf("57:%+v\n", ct)
 	return ct
 }
 
@@ -138,7 +142,6 @@ func GetLocalMirrorsInfo() string {
 	} else {
 		info.Size = _REPO_COUNT
 	}
-
 	data, _ := json.Marshal(info)
 	return string(data)
 }
