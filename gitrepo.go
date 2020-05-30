@@ -85,6 +85,7 @@ func countCacheRepositoryByIP(url string) int64 {
 	var ct int64 = 0
 	group_repos_info = httpGet(url)
 	if group_repos_info != "" {
+		log.Printf("%+v:%+v", url, group_repos_info)
 		var localMirrorsInfo LocalMirrorsInfo
 		json.Unmarshal([]byte(group_repos_info), &localMirrorsInfo)
 		ct = localMirrorsInfo.Count
