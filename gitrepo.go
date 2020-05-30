@@ -89,8 +89,6 @@ func countCacheRepositoryByIP(url string) int64 {
 		var localMirrorsInfo LocalMirrorsInfo
 		json.Unmarshal([]byte(group_repos_info), &localMirrorsInfo)
 		ct = localMirrorsInfo.Count
-		log.Printf("%+v:%+v%+v\n", url, group_repos_info, ct)
-
 	} else {
 		ct = 0
 	}
@@ -110,6 +108,7 @@ func countAllCacheRepository() {
 func SyncCountCacheRepository() {
 	_REPO_COUNT = 0
 	walkDir(g_Basedir, 0, countCacheRepository)
+	//delay 30 second
 	go countAllCacheRepository()
 	log.Printf("sync count cache repository : %v\n", _REPO_COUNT)
 }
