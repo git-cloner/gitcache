@@ -85,6 +85,7 @@ func countCacheRepositoryByIP(url string) int64 {
 	var ct int64 = 0
 	group_repos_info = httpGet(url)
 	if group_repos_info != "" {
+		log.Printf("%+v:%+v", url, group_repos_info)
 		var localMirrorsInfo LocalMirrorsInfo
 		json.Unmarshal([]byte(group_repos_info), &localMirrorsInfo)
 		ct = localMirrorsInfo.Count
@@ -173,7 +174,7 @@ func Cron() {
 	c.AddFunc("0 0 0,4,12,20 * * *", func() {
 		go SyncLocalMirrorFromRemote()
 	})
-	c.AddFunc("0 */10 * * * *", func() {
+	c.AddFunc("0 */1 * * * *", func() {
 		go SyncCountCacheRepository()
 	})
 	c.Start()
