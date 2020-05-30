@@ -133,7 +133,12 @@ func GetLocalMirrorsInfo() string {
 	}
 	info.Nodes = sip
 	info.Progress = ""
-	info.Size = _REPO_ALL_COUNT
+	if _REPO_ALL_COUNT > 0 {
+		info.Size = _REPO_ALL_COUNT
+	} else {
+		info.Size = _REPO_COUNT
+	}
+
 	data, _ := json.Marshal(info)
 	return string(data)
 }
