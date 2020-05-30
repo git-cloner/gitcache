@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/robfig/cron"
 )
@@ -96,19 +97,20 @@ func countCacheRepositoryByIP(url string) int64 {
 	return ct
 }
 
-func countAllCacheRepository() int64 {
+func countAllCacheRepository() {
+	time.Sleep(time.Duration(30) * time.Second)
 	var ct int64
 	ct = countCacheRepositoryByIP("http://192.168.10.54:5000/gitcache/system/info")
 	ct = ct + countCacheRepositoryByIP("http://192.168.10.55:5000/gitcache/system/info")
 	ct = ct + countCacheRepositoryByIP("http://192.168.10.56:5000/gitcache/system/info")
 	ct = ct + countCacheRepositoryByIP("http://192.168.10.57:5000/gitcache/system/info")
-	return ct
+	_REPO_ALL_COUNT = ct
 }
 
 func SyncCountCacheRepository() {
 	_REPO_COUNT = 0
 	walkDir(g_Basedir, 0, countCacheRepository)
-	_REPO_ALL_COUNT = countAllCacheRepository()
+	go countAllCacheRepository()
 	log.Printf("sync count cache repository : %v\n", _REPO_COUNT)
 }
 
