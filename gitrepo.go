@@ -21,6 +21,7 @@ type LocalMirrorsInfo struct {
 var _PATH_DEPTH = 2
 var _IS_SYNC = false
 var _REPO_COUNT int64 = 0
+var _REPO_ALL_COUNT int64 = 0
 
 func fetchMirrorFromRemoteUnshallow(repository string) {
 	remote := "https:/" + strings.Replace(repository, g_Basedir, "", -1)
@@ -79,10 +80,43 @@ func GetOutboundIP() net.IP {
 	return localAddr.IP
 }
 
+func countCacheRepositoryByIP(url string) int64 {
+	var group_repos_info string
+	var ct int64
+	group_repos_info = httpGet(url)
+	if group_repos_info != "" {
+		var localMirrorsInfo LocalMirrorsInfo
+		json.Unmarshal([]byte(group_repos_info), &localMirrorsInfo)
+		ct = localMirrorsInfo.Count
+	}
+	return ct
+}
+
+func countAllCacheRepository() int64 {
+	var ct int64
+	ct = countCacheRepositoryByIP("http://192.168.10.54:5000/gitcache/system/info")
+	ct = ct + countCacheRepositoryByIP("http://192.168.10.55:5000/gitcache/system/info")
+	ct = ct + countCacheRepositoryByIP("http://192.168.10.56:5000/gitcache/system/info")
+	ct = ct + countCacheRepositoryByIP("http://192.168.10.57:5000/gitcache/system/info")
+	return ct
+}
+
 func SyncCountCacheRepository() {
 	_REPO_COUNT = 0
 	walkDir(g_Basedir, 0, countCacheRepository)
+	_REPO_ALL_COUNT = countAllCacheRepository()
 	log.Printf("sync count cache repository : %v\n", _REPO_COUNT)
+}
+
+func httpGet(url string) string {
+	resp, err := http.Get(url)
+	if err != nil {
+		log.Println(err)
+		return ""
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	return string(body)
 }
 
 func GetLocalMirrorsInfo() string {
@@ -99,7 +133,7 @@ func GetLocalMirrorsInfo() string {
 	}
 	info.Nodes = sip
 	info.Progress = ""
-	info.Size = 0
+	info.Size = _REPO_ALL_COUNT
 	data, _ := json.Marshal(info)
 	return string(data)
 }
