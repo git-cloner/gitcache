@@ -241,11 +241,6 @@ func execShelldPipe(cmd string, args []string, w http.ResponseWriter, r *http.Re
 }
 
 func rinetGitRequest(w http.ResponseWriter, r *http.Request) {
-	/*var bodyBytes []byte
-	bodyBytes, _ = ioutil.ReadAll(r.Body)
-	fmt.Printf("%s", bodyBytes)
-	r.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
-	*/
 	url := "https:/" + r.URL.RequestURI()
 	log.Printf("redirect to github.com : %v,%v\n", url, r.Method)
 	client := &http.Client{}

@@ -134,7 +134,7 @@ func GetLocalMirrorsInfo() string {
 	var sip = "node:0"
 	str := strings.Split(ip.String(), ".")
 	if len(str) == 4 {
-		sip = "node:" + str[3]
+		sip = "node" + str[3]
 	}
 	info.Nodes = sip
 	info.Progress = ""
