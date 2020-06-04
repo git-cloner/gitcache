@@ -5,8 +5,10 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 
 	"github.com/tendermint/tendermint/crypto/ed25519"
 )
@@ -25,26 +27,51 @@ type BroadTranInfo struct {
 	Msg    string
 }
 
+type ConfigStruct struct {
+	GenesisPublickey  string `json:"genesis_publickey"`
+	GenesisPrivatekey string `json:"genesis_privatekey"`
+	PeerPublickey     string `json:"peer_publickey"`
+}
+
+func GetPublic() ConfigStruct {
+	// open config.json
+	jsonFile, err := os.Open("config.json")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer jsonFile.Close()
+
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+
+	var result ConfigStruct
+	if err := json.Unmarshal([]byte(byteValue), &result); err != nil {
+		fmt.Println(err)
+	}
+	return result
+}
+
 /**
 * toPublicKey:get token publicKey
 * amount: token's amount
 * repostory: clone adress
  */
-func BroadcastTransaction(toPublicKey string, amount string, repostory string) ResultObj {
+func BroadcastTransaction(amount string, repostory string) ResultObj {
+	var configJson = GetPublic()
+
 	// create msg
 	var broadcastTranMsg BroadTranMsg
 	var Code = "CODE"
-	var PublicKey = "9CE9108CD5243B401CD1A7EDE1921E3F7FCF3ADDCDD70F0AA5AF31350D1B55B1"
+	var PublicKey = configJson.GenesisPublickey
 	broadcastTranMsg.Token = Code
 	broadcastTranMsg.From = PublicKey
-	broadcastTranMsg.To = toPublicKey
+	broadcastTranMsg.To = configJson.PeerPublickey
 	broadcastTranMsg.Amount = amount
 	broadcastTranMsg.Repostory = repostory
 	jsonstring, _ := json.Marshal(broadcastTranMsg)
 	// encode msg
 	var base64msg = base64.StdEncoding.EncodeToString([]byte(jsonstring))
 	// sign
-	var PrivateKey = "3d3a226a1c3f72af75270cc4f9475ebfbd7c7150b313aa3a27ee73a67a8df15f9ce9108cd5243b401cd1a7ede1921e3f7fcf3addcdd70f0aa5af31350d1b55b1"
+	var PrivateKey = configJson.GenesisPrivatekey
 	_privatekey, _ := hex.DecodeString(PrivateKey)
 	var privateKey ed25519.PrivKeyEd25519
 	copy(privateKey[:], _privatekey)
