@@ -88,7 +88,6 @@ func fetchMirrorFromRemote(remote string, local string, update string) string {
 	if update == "" {
 		return execShell("git", []string{"-C", local, "fetch", "--depth=1"})
 	} else {
-		//return execShell("git", []string{"-C", local, "fetch", "--unshallow"})
 		return execShell("git", []string{"-C", local, "remote", "update"})
 	}
 }
@@ -368,6 +367,7 @@ func RequestHandler(basedir string) http.HandlerFunc {
 			}
 		} else {
 			if ifValidLocalCache(local) {
+				log.Printf("git clone from local : %s %s\n", remote, local)
 				hdrNocache(w)
 				w.Header().Set("Content-Type", fmt.Sprintf("application/x-%s-result", httpParams.Gitservice))
 				w.WriteHeader(200)
@@ -377,7 +377,7 @@ func RequestHandler(basedir string) http.HandlerFunc {
 				//redirect to github.com clone
 				rinetGitRequest(w, r)
 				//mirror async delay 10 second
-				log.Printf("git mirror from remote : %s %s\n", remote, local)
+				log.Printf("git clone from remote : %s %s\n", remote, local)
 				go deferMirrorFromRemote(remote, local)
 			}
 		}

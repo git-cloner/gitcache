@@ -108,9 +108,9 @@ func countAllCacheRepository() {
 func SyncCountCacheRepository() {
 	_REPO_COUNT = 0
 	walkDir(g_Basedir, 0, countCacheRepository)
+	log.Printf("sync count cache repository : %v\n", _REPO_COUNT)
 	//delay 30 second
 	go countAllCacheRepository()
-	log.Printf("sync count cache repository : %v\n", _REPO_COUNT)
 }
 
 func httpGet(url string) string {
@@ -171,7 +171,7 @@ func BroadCastGitCloneCommandToChain(repository string) {
 
 func Cron() {
 	c := cron.New()
-	c.AddFunc("0 0 0,4,12,20 * * *", func() {
+	c.AddFunc("0 0 0,12 * * *", func() {
 		go SyncLocalMirrorFromRemote()
 	})
 	c.AddFunc("0 */10 * * * *", func() {
