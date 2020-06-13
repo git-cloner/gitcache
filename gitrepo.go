@@ -26,6 +26,11 @@ var _REPO_ALL_COUNT int64 = 0
 
 func fetchMirrorFromRemoteUnshallow(repository string) {
 	remote := "https:/" + strings.Replace(repository, g_Basedir, "", -1)
+	//avoid public repository change to private,git remote update will be hung
+	if !httpHead(remote) {
+		log.Printf("git remote update: %s %s\n", remote, "remote not exists")
+		return
+	}
 	local := repository
 	log.Printf("git remote update: %s begin\n", local)
 	err := fetchMirrorFromRemote(remote, local, "update")
@@ -124,6 +129,19 @@ func httpGet(url string) string {
 	return string(body)
 }
 
+func httpHead(url string) bool {
+	resp, err := http.Head(url)
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+	if resp.StatusCode == 200 {
+		return true
+	} else {
+		return false
+	}
+}
+
 func GetLocalMirrorsInfo() string {
 	if _REPO_COUNT == 0 {
 		walkDir(g_Basedir, 0, countCacheRepository)
@@ -172,6 +190,7 @@ func BroadCastGitCloneCommandToChain(repository string) {
 func Cron() {
 	c := cron.New()
 	c.AddFunc("0 0 0,12 * * *", func() {
+		//c.AddFunc("0 */1 * * * *", func() { //test
 		go SyncLocalMirrorFromRemote()
 	})
 	c.AddFunc("0 */10 * * * *", func() {
