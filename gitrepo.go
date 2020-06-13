@@ -23,8 +23,11 @@ var _PATH_DEPTH = 2
 var _IS_SYNC = false
 var _REPO_COUNT int64 = 0
 var _REPO_ALL_COUNT int64 = 0
+var _SYNC_PROGRESS = 0
 
 func fetchMirrorFromRemoteUnshallow(repository string) {
+	_SYNC_PROGRESS = _SYNC_PROGRESS + 1
+	log.Printf("git remote update: %v of %v\n", _SYNC_PROGRESS, _REPO_COUNT)
 	remote := "https:/" + strings.Replace(repository, g_Basedir, "", -1)
 	//avoid public repository change to private,git remote update will be hung
 	if !httpHead(remote) {
@@ -71,6 +74,7 @@ func SyncLocalMirrorFromRemote() {
 	}
 	log.Println("sync local mirror from remote begin")
 	_IS_SYNC = true
+	_SYNC_PROGRESS = 0
 	walkDir(g_Basedir, 0, fetchMirrorFromRemoteUnshallow)
 	log.Println("sync local mirror from remote end")
 	_IS_SYNC = false
