@@ -27,7 +27,7 @@ var _SYNC_PROGRESS = 0
 
 func fetchMirrorFromRemoteUnshallow(repository string) {
 	_SYNC_PROGRESS = _SYNC_PROGRESS + 1
-	log.Printf("git remote update: %v of %v\n", _SYNC_PROGRESS, _REPO_COUNT)
+	log.Printf("git remote update: %v of %v , %.2f%%\n", _SYNC_PROGRESS, _REPO_COUNT, float64(_SYNC_PROGRESS)/float64(_REPO_COUNT)*100.00)
 	remote := "https:/" + strings.Replace(repository, g_Basedir, "", -1)
 	//avoid public repository change to private,git remote update will be hung
 	if !httpHead(remote) {
