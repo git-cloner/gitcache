@@ -27,7 +27,10 @@ var _SYNC_PROGRESS = 0
 
 func fetchMirrorFromRemoteUnshallow(repository string) {
 	_SYNC_PROGRESS = _SYNC_PROGRESS + 1
-	log.Printf("git remote update: %v of %v , %.2f%%\n", _SYNC_PROGRESS, _REPO_COUNT, float64(_SYNC_PROGRESS)/float64(_REPO_COUNT)*100.00)
+	//avoid devide by zero
+	if _REPO_COUNT > 0 {
+		log.Printf("git remote update: %v of %v , %.2f%%\n", _SYNC_PROGRESS, _REPO_COUNT, float64(_SYNC_PROGRESS)/float64(_REPO_COUNT)*100.00)
+	}
 	remote := "https:/" + strings.Replace(repository, g_Basedir, "", -1)
 	//avoid public repository change to private,git remote update will be hung
 	if !httpHead(remote) {
@@ -118,6 +121,9 @@ func SyncCountCacheRepository() {
 	_REPO_COUNT = 0
 	walkDir(g_Basedir, 0, countCacheRepository)
 	log.Printf("sync count cache repository : %v\n", _REPO_COUNT)
+	if _REPO_COUNT > 0 {
+		log.Printf("git remote sync: %v of %v , %.2f%%\n", _SYNC_PROGRESS, _REPO_COUNT, float64(_SYNC_PROGRESS)/float64(_REPO_COUNT)*100.00)
+	}
 	//delay 30 second
 	go countAllCacheRepository()
 }
