@@ -71,6 +71,11 @@ func walkDir(dirpath string, depth int, f func(string)) {
 }
 
 func SyncLocalMirrorFromRemote() {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Printf("process recover: %s\n", err)
+		}
+	}()
 	if _IS_SYNC {
 		log.Println("syncing local mirror from remote,sync ignore")
 		return
@@ -118,6 +123,11 @@ func countAllCacheRepository() {
 }
 
 func SyncCountCacheRepository() {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Printf("process recover: %s\n", err)
+		}
+	}()
 	_REPO_COUNT = 0
 	walkDir(g_Basedir, 0, countCacheRepository)
 	log.Printf("sync count cache repository : %v\n", _REPO_COUNT)

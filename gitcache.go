@@ -168,6 +168,11 @@ func mirrorFromRemote(remote string, local string) bool {
 }
 
 func deferMirrorFromRemote(remote string, local string) bool {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Printf("process recover: %s\n", err)
+		}
+	}()
 	time.Sleep(time.Duration(10) * time.Second)
 	localExists := mirrorFromRemote(remote, local)
 	if !localExists {
