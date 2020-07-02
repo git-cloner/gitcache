@@ -113,6 +113,11 @@ func countCacheRepositoryByIP(url string) int64 {
 }
 
 func countAllCacheRepository() {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Printf("process recover: %s\n", err)
+		}
+	}()
 	time.Sleep(time.Duration(30) * time.Second)
 	var ct int64
 	ct = countCacheRepositoryByIP("http://192.168.10.54:5000/gitcache/system/info")
