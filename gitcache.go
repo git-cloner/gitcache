@@ -233,11 +233,11 @@ func execShelldPipe(cmd string, args []string, w http.ResponseWriter, r *http.Re
 		n_write, err := w.Write(p[:n_read])
 		if err != nil {
 			log.Printf("execute shell with pipe error: %v\n", err)
-			os.Exit(1)
+			break
 		}
 		if n_read != n_write {
 			log.Printf("execute shell with pipe failed to write data: %d read, %d written\n", n_read, n_write)
-			os.Exit(1)
+			break
 		}
 		flusher.Flush()
 	}
