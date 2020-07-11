@@ -21,6 +21,26 @@ type HttpParams struct {
 	IsInfoReq  bool
 }
 
+var hitCache map[string]int64
+
+func countHitCache() {
+	if hitCache == nil {
+		hitCache = make(map[string]int64)
+	}
+	now := time.Now()
+	ns := now.Format("2006-01-02")
+	v, ok := hitCache[ns]
+	if ok {
+		hitCache[ns] = v + 1
+	} else {
+		hitCache[ns] = 1
+	}
+	for k, v := range hitCache {
+		log.Printf("hit cache : %v  %v\n", k, v)
+	}
+
+}
+
 func parseHttpParams(r *http.Request) HttpParams {
 	u, err := url.Parse(r.RequestURI)
 	if err != nil {
@@ -372,6 +392,7 @@ func RequestHandler(basedir string) http.HandlerFunc {
 			}
 		} else {
 			if ifValidLocalCache(local) {
+				countHitCache()
 				log.Printf("git clone from local : %s %s\n", remote, local)
 				hdrNocache(w)
 				w.Header().Set("Content-Type", fmt.Sprintf("application/x-%s-result", httpParams.Gitservice))
