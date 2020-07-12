@@ -35,10 +35,6 @@ func countHitCache() {
 	} else {
 		hitCache[ns] = 1
 	}
-	for k, v := range hitCache {
-		log.Printf("hit cache : %v  %v\n", k, v)
-	}
-
 }
 
 func parseHttpParams(r *http.Request) HttpParams {
