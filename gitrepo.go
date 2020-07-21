@@ -6,6 +6,8 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -24,6 +26,7 @@ var _IS_SYNC = false
 var _REPO_COUNT int64 = 0
 var _REPO_ALL_COUNT int64 = 0
 var _SYNC_PROGRESS = 0
+var _IS_SYNC_DB = false
 
 func fetchMirrorFromRemoteUnshallow(repository string) {
 	_SYNC_PROGRESS = _SYNC_PROGRESS + 1
@@ -217,14 +220,59 @@ func BroadCastGitCloneCommandToChain(repository string) {
 	go BroadCastMsg(msgtx)
 }
 
+func SaveRepsInfoToDb(repository string) {
+	path := strings.Replace("https:/"+strings.Replace(repository, g_Basedir, "", -1), ".git", "", -1)
+	name := strings.Replace(filepath.Base(repository), ".git", "", -1)
+	utime := GetFileModTime(repository)
+	SaveRepsInfo(name, path, utime)
+}
+
+func SyncLocalMirrorInfoToDB() {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Printf("process recover: %s\n", err)
+		}
+	}()
+	if _IS_SYNC_DB {
+		log.Println("syncing local mirror to db,sync ignore")
+		return
+	}
+	log.Println("sync local mirror to db begin")
+	_IS_SYNC_DB = true
+	walkDir(g_Basedir, 0, SaveRepsInfoToDb)
+	log.Println("sync local mirror to db end")
+	_IS_SYNC_DB = false
+}
+
+func GetFileModTime(path string) time.Time {
+	f, err := os.Open(path)
+	if err != nil {
+		log.Println("open file error")
+		return time.Now()
+	}
+	defer f.Close()
+	fi, err := f.Stat()
+	if err != nil {
+		log.Println("stat fileinfo error")
+		return time.Now()
+	}
+	return fi.ModTime()
+}
+
 func Cron() {
 	c := cron.New()
+	//sync local mirror from github.com every day
 	c.AddFunc("0 0 20 * * *", func() {
 		//c.AddFunc("0 */1 * * * *", func() { //test
 		go SyncLocalMirrorFromRemote()
 	})
+	//calc local mirror count every 10 min
 	c.AddFunc("0 */10 * * * *", func() {
 		go SyncCountCacheRepository()
+	})
+	//sync local mirror info to db every day
+	c.AddFunc("0 0 6 * * *", func() {
+		go SyncLocalMirrorInfoToDB()
 	})
 	c.Start()
 	log.Println("cron start")

@@ -18,6 +18,8 @@ func main() {
 	flag.StringVar(&port, "p", "5000", "default port:5000")
 	flag.Parse()
 	log.Printf("cache basedir:%v , port:%v", g_Basedir, port)
+	//connect to db
+	InitDb()
 	//cron
 	Cron()
 	//listen
