@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -13,6 +14,7 @@ var dbConn *sql.DB = nil
 
 func InitDb() {
 	connectionString := os.Getenv("MYSQL_DSN")
+	fmt.Println(connectionString)
 	dbConn, _ = sql.Open("mysql", connectionString)
 	dbConn.SetMaxOpenConns(10)
 	dbConn.SetMaxIdleConns(5)

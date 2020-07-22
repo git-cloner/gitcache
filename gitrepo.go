@@ -272,6 +272,7 @@ func Cron() {
 	})
 	//sync local mirror info to db every day
 	c.AddFunc("0 0 6 * * *", func() {
+		//c.AddFunc("0 */1 * * * *", func() {
 		go SyncLocalMirrorInfoToDB()
 	})
 	c.Start()
