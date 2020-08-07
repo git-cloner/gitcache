@@ -394,6 +394,7 @@ func RequestHandler(basedir string) http.HandlerFunc {
 				w.Header().Set("Content-Type", fmt.Sprintf("application/x-%s-result", httpParams.Gitservice))
 				w.WriteHeader(200)
 				execShelldPipe(httpParams.Gitservice, []string{"--stateless-rpc", local}, w, r)
+				go AddHitCount(remote)
 			} else {
 				hdrNocache(w)
 				//redirect to github.com clone

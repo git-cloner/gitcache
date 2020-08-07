@@ -40,7 +40,7 @@ func SaveRepsInfo(name string, path string, utime time.Time) {
 		rows.Scan(&count)
 	}
 	if count == 0 {
-		_, err = dbConn.Exec("insert into gitcache_repos (name,path,ctime,utime) values (?,?,?,?)", name, path, utime, utime)
+		_, err = dbConn.Exec("insert into gitcache_repos (name,path,ctime,utime,hitcount) values (?,?,?,?,?)", name, path, utime, utime, 0)
 		if err != nil {
 			log.Printf("db error : %v", err)
 		}
@@ -49,5 +49,16 @@ func SaveRepsInfo(name string, path string, utime time.Time) {
 		if err != nil {
 			log.Printf("db error : %v", err)
 		}
+	}
+}
+
+func AddHitCount(path string) {
+	if dbConn == nil {
+		log.Printf("db error : connection is nil")
+		return
+	}
+	_, err := dbConn.Exec("update gitcache_repos set hitcount = hitcount + 1 where path = ?", path)
+	if err != nil {
+		log.Printf("db error : %v", err)
 	}
 }
