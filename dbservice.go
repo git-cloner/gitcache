@@ -40,7 +40,7 @@ func SaveRepsInfo(name string, path string, utime time.Time) {
 		rows.Scan(&count)
 	}
 	if count == 0 {
-		_, err = dbConn.Exec("insert into gitcache_repos (name,path,ctime,utime,hitcount) values (?,?,?,?,?)", name, path, utime, utime, 1)
+		_, err = dbConn.Exec("insert into gitcache_repos (name,path,ctime,utime,hitcount) values (?,?,?,?,?)", name, path, utime, utime, 0)
 		if err != nil {
 			log.Printf("db error : %v", err)
 		}
