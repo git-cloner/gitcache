@@ -245,19 +245,19 @@ func SyncLocalMirrorInfoToDB() {
 }
 
 func GetFileModTime(path string) time.Time {
-	l, _ := time.LoadLocation("Asia/Shanghai")
+	hh, _ := time.ParseDuration("1h")
 	f, err := os.Open(path)
 	if err != nil {
 		log.Println("open file error")
-		return time.Now().In((l))
+		return time.Now().Add(8 * hh)
 	}
 	defer f.Close()
 	fi, err := f.Stat()
 	if err != nil {
 		log.Println("stat fileinfo error")
-		return time.Now().In((l))
+		return time.Now().Add(8 * hh)
 	}
-	return fi.ModTime().In((l))
+	return fi.ModTime().Add(8 * hh)
 }
 
 func Cron() {
