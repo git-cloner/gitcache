@@ -405,6 +405,7 @@ func RequestHandler(basedir string) http.HandlerFunc {
 				//mirror async delay 10 second
 				log.Printf("git clone from remote : %s %s\n", remote, local)
 				go deferMirrorFromRemote(remote, local)
+				go SaveRepsInfoToDb(remote)
 			}
 		}
 		return
