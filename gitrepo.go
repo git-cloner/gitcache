@@ -220,11 +220,24 @@ func BroadCastGitCloneCommandToChain(repository string) {
 	go BroadCastMsg(msgtx)
 }
 
+/*func getRepoStar(path string) int {
+	url := strings.Replace(path, "https://github.com", "https://api.github.com/repos", -1) + "?access_token=" + GITHUB_TOKEN
+	contents := httpGet(url)
+	const reg = `"stargazers_count":\s*(\d+),`
+	compile := regexp.MustCompile(reg)
+	submatch := compile.FindAllSubmatch([]byte(contents), -1)
+	var stargazers_count = 0
+	for _, m := range submatch {
+		stargazers_count, _ = strconv.Atoi(string(m[1]))
+	}
+	return stargazers_count
+}
+*/
 func SaveRepsInfoToDb(repository string) {
 	path := strings.Replace("https:/"+strings.Replace(repository, g_Basedir, "", -1), ".git", "", -1)
 	name := strings.Replace(filepath.Base(repository), ".git", "", -1)
 	utime := GetFileModTime(repository)
-	SaveRepsInfo(name, path, utime)
+	SaveRepsInfo(name, path, utime /*, getRepoStar(path)*/)
 }
 
 func SyncLocalMirrorInfoToDB() {
