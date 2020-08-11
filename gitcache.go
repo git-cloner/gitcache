@@ -195,8 +195,7 @@ func deferMirrorFromRemote(remote string, local string) bool {
 		time.Sleep(time.Duration(10) * time.Second)
 		BroadCastGitCloneCommandToChain(remote)
 	}
-	time.Sleep(time.Duration(10) * time.Second)
-	go SaveRepsInfoToDb(remote)
+	go SaveRepsInfoToDb(local)
 	return localExists
 }
 
