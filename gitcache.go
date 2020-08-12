@@ -357,7 +357,7 @@ func RequestHandler(basedir string) http.HandlerFunc {
 		if ((r.Method == "GET") && (httpParams.IsInfoReq)) || ((r.Method != "GET") && (!httpParams.IsInfoReq)) {
 			log.Printf("client send git request: %s %v valid ok\n", r.Method, httpParams.IsInfoReq)
 		} else {
-			log.Printf("not supported request : %s %s\n", r.Method, httpParams.IsInfoReq)
+			log.Printf("not supported request : %v %v\n", r.Method, httpParams.IsInfoReq)
 			w.WriteHeader(500)
 			return
 		}
@@ -368,7 +368,7 @@ func RequestHandler(basedir string) http.HandlerFunc {
 				w.WriteHeader(body.StatusCode)
 				return
 			} else {
-				log.Printf("not supported request : %s %s\n", r.Method, httpParams.Gitservice)
+				log.Printf("not supported request : %v %v\n", r.Method, httpParams.Gitservice)
 				w.WriteHeader(500)
 				return
 			}
