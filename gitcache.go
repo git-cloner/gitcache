@@ -357,9 +357,9 @@ func RequestHandler(basedir string) http.HandlerFunc {
 		if ((r.Method == "GET") && (httpParams.IsInfoReq)) || ((r.Method != "GET") && (!httpParams.IsInfoReq)) {
 			log.Printf("client send git request: %s %v valid ok\n", r.Method, httpParams.IsInfoReq)
 		} else {
-			//w.WriteHeader(200)
-			//return
-			panic("not supported request")
+			log.Printf("not supported request : %s %s\n", r.Method, httpParams.IsInfoReq)
+			w.WriteHeader(500)
+			return
 		}
 		//only support git-upload-pack because
 		if httpParams.Gitservice != "git-upload-pack" {
@@ -368,7 +368,9 @@ func RequestHandler(basedir string) http.HandlerFunc {
 				w.WriteHeader(body.StatusCode)
 				return
 			} else {
-				panic("not supported request " + httpParams.Gitservice)
+				log.Printf("not supported request : %s %s\n", r.Method, httpParams.Gitservice)
+				w.WriteHeader(500)
+				return
 			}
 		}
 		var remote = "https://" + httpParams.Repository
