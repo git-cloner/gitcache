@@ -276,7 +276,7 @@ func GetFileModTime(path string) time.Time {
 func Cron() {
 	c := cron.New()
 	//sync local mirror from github.com every day
-	c.AddFunc("0 0 20 * * *", func() {
+	c.AddFunc("0 0 0 * * *", func() {
 		//c.AddFunc("0 */1 * * * *", func() { //test
 		go SyncLocalMirrorFromRemote()
 	})
@@ -285,7 +285,7 @@ func Cron() {
 		go SyncCountCacheRepository()
 	})
 	//sync local mirror info to db every day
-	c.AddFunc("0 0 0 * * *", func() {
+	c.AddFunc("0 0 6 * * *", func() {
 		//c.AddFunc("0 */1 * * * *", func() {
 		go SyncLocalMirrorInfoToDB()
 	})
