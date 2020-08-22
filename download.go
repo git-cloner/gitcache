@@ -1,10 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/dgrijalva/jwt-go"
 )
 
 func validRemoteFile(url string) bool {
@@ -20,9 +23,24 @@ func validRemoteFile(url string) bool {
 	}
 }
 
+func ParseToken(tokenString string) (jwt.MapClaims, error) {
+	SECRETKEY := "243223ffslsfsldfl412fdsfsdf"
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(SECRETKEY), nil
+	})
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		return claims, nil
+	} else {
+		return nil, err
+	}
+}
 func validUser(token string) bool {
-	//no yet realize
-	return false
+	_, error := ParseToken(token)
+	log.Printf("validUser error message : %v \n", error)
+	return error == nil
 }
 
 func DownloadFile(w http.ResponseWriter, r *http.Request) {

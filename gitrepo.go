@@ -127,6 +127,7 @@ func countAllCacheRepository() {
 	ct = ct + countCacheRepositoryByIP("http://192.168.10.55:5000/gitcache/system/info")
 	ct = ct + countCacheRepositoryByIP("http://192.168.10.56:5000/gitcache/system/info")
 	ct = ct + countCacheRepositoryByIP("http://192.168.10.57:5000/gitcache/system/info")
+	ct = ct + countCacheRepositoryByIP("http://192.168.10.19:5000/gitcache/system/info")
 	_REPO_ALL_COUNT = ct
 }
 
