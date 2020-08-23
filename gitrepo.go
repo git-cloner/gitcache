@@ -277,7 +277,16 @@ func GetFileModTime(path string) time.Time {
 func Cron() {
 	c := cron.New()
 	//sync local mirror from github.com every day
-	c.AddFunc("0 0 0 * * *", func() {
+	var ip net.IP = GetOutboundIP()
+	str := ip.String()
+	var crontime = "0 0 2 * * *"
+	if (str == "192.168.10.54") || (str == "192.168.10.55") {
+		crontime = "0 0 20 * * *"
+	} else if (str == "192.168.10.56") || (str == "192.168.10.57") {
+		crontime = "0 0 23 * * *"
+	}
+	log.Println(str + " start cron at :" + crontime)
+	c.AddFunc(crontime, func() {
 		//c.AddFunc("0 */1 * * * *", func() { //test
 		go SyncLocalMirrorFromRemote()
 	})
