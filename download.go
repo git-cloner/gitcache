@@ -50,6 +50,11 @@ func DownloadFile(w http.ResponseWriter, r *http.Request) {
 		token = params["token"][0]
 	}
 	url := "https:" + strings.Replace(strings.Replace(r.URL.RequestURI(), "gitcache/download", "", -1), "?token="+token, "", -1)
+	if !strings.Contains(url, "://github.com/") {
+		log.Printf("invalid url")
+		w.WriteHeader(401)
+		return
+	}
 	if !validUser(token) {
 		log.Printf("invalid user info")
 		w.WriteHeader(403)
