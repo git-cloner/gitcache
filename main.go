@@ -19,12 +19,10 @@ func main() {
 	flag.Parse()
 	log.Printf("cache basedir:%v , port:%v", g_Basedir, port)
 	//port == 5000 gitcacher , posrt != 5000 downloader
-	if port == "5000" {
-		//connect to db
-		InitDb()
-		//cron
-		Cron()
-	}
+	//connect to db
+	InitDb()
+	//cron
+	Cron()
 	//listen
 	http.HandleFunc("/", RequestHandler(g_Basedir))
 	address := ":" + port

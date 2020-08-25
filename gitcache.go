@@ -347,9 +347,6 @@ func RequestHandler(basedir string) http.HandlerFunc {
 			w.WriteHeader(200)
 			w.Write([]byte(CacheSysHandlerFunc(r)))
 			return
-		} else if strings.Contains(r.URL.Path, "gitcache/download") {
-			DownloadFile(w, r)
-			return
 		}
 		log.Printf("client send git request: %s %s %s %s\n", r.RemoteAddr, r.Method, r.URL.Path, r.Proto)
 		var httpParams HttpParams = parseHttpParams(r)
