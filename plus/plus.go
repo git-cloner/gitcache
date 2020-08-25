@@ -35,8 +35,7 @@ func parseHttpParams(r *http.Request) HttpParams {
 	return httpParams
 }
 
-func rinetGitRequest(w http.ResponseWriter, r *http.Request) {
-	url := "https:/" + r.URL.RequestURI()
+func rinetGitRequest(w http.ResponseWriter, r *http.Request, url string) {
 	log.Printf("redirect to github.com : %v,%v\n", url, r.Method)
 	client := &http.Client{}
 	req, err := http.NewRequest(r.Method, url, r.Body)
@@ -92,8 +91,7 @@ func cors(w http.ResponseWriter) {
 	w.Header().Set("content-type", "application/json")
 }
 
-func RequestFromRemote(r *http.Request) *http.Response {
-	var url = "https:/" + r.URL.RequestURI()
+func RequestFromRemote(url string) *http.Response {
 	client := &http.Client{}
 	reqest, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -114,6 +112,10 @@ func RequestHandler() http.HandlerFunc {
 			DownloadFile(w, r)
 			return
 		}
+		//temp close clone service
+		return
+		url := "https:/" + r.URL.RequestURI()
+		log.Printf("client send git request: %s\n", url)
 		log.Printf("client send git request: %s %s %s %s\n", r.RemoteAddr, r.Method, r.URL.Path, r.Proto)
 		var httpParams HttpParams = parseHttpParams(r)
 		log.Printf("git params: %+v\n", httpParams)
@@ -127,7 +129,7 @@ func RequestHandler() http.HandlerFunc {
 		//only support git-upload-pack because
 		if httpParams.Gitservice != "git-upload-pack" {
 			if httpParams.Gitservice == "git-receive-pack" {
-				body := RequestFromRemote(r)
+				body := RequestFromRemote(url)
 				w.WriteHeader(body.StatusCode)
 				return
 			} else {
@@ -136,15 +138,9 @@ func RequestHandler() http.HandlerFunc {
 				return
 			}
 		}
-		if httpParams.IsInfoReq {
-			hdrNocache(w)
-			//redirect to github.com clone
-			rinetGitRequest(w, r)
-		} else {
-			hdrNocache(w)
-			//redirect to github.com clone
-			rinetGitRequest(w, r)
-		}
+		hdrNocache(w)
+		//redirect to github.com clone
+		rinetGitRequest(w, r, url)
 		return
 	}
 }
