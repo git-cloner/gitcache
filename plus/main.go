@@ -13,7 +13,7 @@ func main() {
 	log.SetFlags(log.Lshortfile | log.LstdFlags)
 	log.SetPrefix("LOG: ")
 	//flag params
-	flag.StringVar(&port, "p", "5000", "default port:5000")
+	flag.StringVar(&port, "p", "5001", "default port:5001")
 	flag.Parse()
 	log.Printf("port:%v", port)
 	//listen
