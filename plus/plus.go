@@ -4,36 +4,8 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"net/url"
 	"strings"
 )
-
-type HttpParams struct {
-	Repository string
-	Gitservice string
-	IsInfoReq  bool
-}
-
-func parseHttpParams(r *http.Request) HttpParams {
-	u, err := url.Parse(r.RequestURI)
-	if err != nil {
-		panic(err)
-	}
-	str := strings.Split(u.Path, "/")
-	if len(str) < 4 {
-		panic("bad request params")
-	}
-	_Repository := str[1] + "/" + str[2] + "/" + str[3]
-	var _Gitservice = strings.Replace(u.RawQuery, "service=", "", -1)
-	if _Gitservice == "" {
-		if (strings.Index(str[4], "git") != -1) && (strings.Index(str[4], "pack") != -1) {
-			_Gitservice = str[4]
-		}
-	}
-	_IsInfoReq := (str[4] == "info")
-	var httpParams HttpParams = HttpParams{Repository: _Repository, Gitservice: _Gitservice, IsInfoReq: _IsInfoReq}
-	return httpParams
-}
 
 func rinetGitRequest(w http.ResponseWriter, r *http.Request, url string) {
 	log.Printf("redirect to github.com : %v,%v\n", url, r.Method)
@@ -106,38 +78,37 @@ func RequestFromRemote(url string) *http.Response {
 	return response
 }
 
+func preProcUrl(url string) string {
+	var realurl = ""
+	var token = ""
+	comma := strings.Index(url, ".github.com")
+	if comma > 1 {
+		token = url[1:comma]
+		realurl = url[comma+1:]
+	}
+	log.Printf("real url: %s,token: %s\n", realurl, token)
+	if ValidUser(token) {
+		return realurl
+	} else {
+		return ""
+	}
+
+}
+
 func RequestHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if strings.Contains(r.URL.Path, "gitcache/download") {
 			DownloadFile(w, r)
 			return
 		}
-		//temp close clone service
-		return
-		url := "https:/" + r.URL.RequestURI()
-		log.Printf("client send git request: %s\n", url)
-		log.Printf("client send git request: %s %s %s %s\n", r.RemoteAddr, r.Method, r.URL.Path, r.Proto)
-		var httpParams HttpParams = parseHttpParams(r)
-		log.Printf("git params: %+v\n", httpParams)
-		if ((r.Method == "GET") && (httpParams.IsInfoReq)) || ((r.Method != "GET") && (!httpParams.IsInfoReq)) {
-			log.Printf("client send git request: %s %v valid ok\n", r.Method, httpParams.IsInfoReq)
-		} else {
-			log.Printf("not supported request : %v %v\n", r.Method, httpParams.IsInfoReq)
-			w.WriteHeader(500)
+		var url = preProcUrl(r.URL.RequestURI())
+		if url == "" {
+			log.Printf("unkonw token : %v\n", r.URL.RequestURI())
+			w.WriteHeader(404)
 			return
 		}
-		//only support git-upload-pack because
-		if httpParams.Gitservice != "git-upload-pack" {
-			if httpParams.Gitservice == "git-receive-pack" {
-				body := RequestFromRemote(url)
-				w.WriteHeader(body.StatusCode)
-				return
-			} else {
-				log.Printf("not supported request : %v %v\n", r.Method, httpParams.Gitservice)
-				w.WriteHeader(500)
-				return
-			}
-		}
+		url = "https://" + url
+		log.Printf("client send git request: %s\n", url)
 		hdrNocache(w)
 		//redirect to github.com clone
 		rinetGitRequest(w, r, url)

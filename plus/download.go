@@ -37,7 +37,7 @@ func ParseToken(tokenString string) (jwt.MapClaims, error) {
 		return nil, err
 	}
 }
-func validUser(token string) bool {
+func ValidUser(token string) bool {
 	_, error := ParseToken(token)
 	log.Printf("validUser error message : %v \n", error)
 	return error == nil
@@ -55,7 +55,7 @@ func DownloadFile(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(401)
 		return
 	}
-	if !validUser(token) {
+	if !ValidUser(token) {
 		log.Printf("invalid user info")
 		w.WriteHeader(403)
 		return
