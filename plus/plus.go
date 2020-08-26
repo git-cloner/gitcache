@@ -92,7 +92,6 @@ func preProcUrl(url string) string {
 	} else {
 		return ""
 	}
-
 }
 
 func RequestHandler() http.HandlerFunc {
@@ -103,7 +102,7 @@ func RequestHandler() http.HandlerFunc {
 		}
 		var url = preProcUrl(r.URL.RequestURI())
 		if url == "" {
-			log.Printf("unkonw token : %v\n", r.URL.RequestURI())
+			log.Printf("unknown token : %v\n", r.URL.RequestURI())
 			w.WriteHeader(404)
 			return
 		}
