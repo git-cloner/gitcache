@@ -279,13 +279,13 @@ func Cron() {
 	//sync local mirror from github.com every day
 	var ip net.IP = GetOutboundIP()
 	str := ip.String()
-	var crontime = "0 0 2 * * *"
+	var crontime = "0 0 4 * * *"
 	if (str == "192.168.10.54") || (str == "192.168.10.55") {
-		crontime = "0 0 20 * * *"
+		crontime = "0 0 22 * * *"
 	} else if (str == "192.168.10.56") || (str == "192.168.10.57") {
-		crontime = "0 0 23 * * *"
+		crontime = "0 0 1 * * *"
 	}
-	log.Println(str + " start cron at :" + crontime)
+	log.Println(str + "sync from remote cron at :" + crontime)
 	c.AddFunc(crontime, func() {
 		//c.AddFunc("0 */1 * * * *", func() { //test
 		go SyncLocalMirrorFromRemote()
