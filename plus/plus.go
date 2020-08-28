@@ -31,7 +31,7 @@ func rinetGitRequest(w http.ResponseWriter, r *http.Request, url string) {
 	if !ok {
 		panic("redirect to github.com to be an http.Flusher")
 	}
-	p := make([]byte, 20480)
+	p := make([]byte, 204800)
 	for {
 		n_read, err := resp.Body.Read(p)
 		//log.Printf("clone from github.com direct : %v,%v\n", url, n_read)
