@@ -348,6 +348,18 @@ func RequestHandler(basedir string) http.HandlerFunc {
 			w.Write([]byte(CacheSysHandlerFunc(r)))
 			return
 		}
+		if strings.Contains(r.URL.Path, "gitcache/image") {
+			cors(w)
+			imagurl := "https:" + strings.Replace(r.URL.Path, "gitcache/image", "", -1)
+			if CacheExists(imagurl) {
+				log.Printf("check image exists: %s true\n", imagurl)
+				w.WriteHeader(200)
+			} else {
+				log.Printf("check image exists: %s false\n", imagurl)
+				w.WriteHeader(404)
+			}
+			return
+		}
 		log.Printf("client send git request: %s %s %s %s\n", r.RemoteAddr, r.Method, r.URL.Path, r.Proto)
 		var httpParams HttpParams = parseHttpParams(r)
 		log.Printf("git params: %+v\n", httpParams)

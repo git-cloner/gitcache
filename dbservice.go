@@ -62,3 +62,25 @@ func AddHitCount(path string) {
 		log.Printf("db error : %v", err)
 	}
 }
+
+func CacheExists(path string) bool {
+	if dbConn == nil {
+		log.Printf("db error : connection is nil")
+		return false
+	}
+	var count int64
+	rows, err := dbConn.Query("select count(*) from gitcache_repos where path = ?", path)
+	if err != nil {
+		log.Printf("db error : %v", err)
+		return false
+	}
+	defer rows.Close()
+	for rows.Next() {
+		rows.Scan(&count)
+	}
+	if count == 0 {
+		return false
+	} else {
+		return true
+	}
+}
