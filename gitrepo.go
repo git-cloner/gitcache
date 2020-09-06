@@ -142,11 +142,6 @@ func SyncCountCacheRepository() {
 	log.Printf("sync count cache repository : %v\n", _REPO_COUNT)
 	if _REPO_COUNT > 0 {
 		log.Printf("git remote sync: %v of %v , %.2f%%\n", _SYNC_PROGRESS, _REPO_COUNT, float64(_SYNC_PROGRESS)/float64(_REPO_COUNT)*100.00)
-		if hitCache != nil {
-			for k, v := range hitCache {
-				log.Printf("hit cache : %v  %v\n", k, v)
-			}
-		}
 	}
 	//delay 30 second
 	go countAllCacheRepository()
@@ -177,6 +172,7 @@ func httpHead(url string) bool {
 }
 
 func GetLocalMirrorsInfo() string {
+	go Stats("visit")
 	if _REPO_COUNT == 0 {
 		walkDir(g_Basedir, 0, countCacheRepository)
 	}

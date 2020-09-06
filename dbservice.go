@@ -53,6 +53,7 @@ func SaveRepsInfo(name string, path string, utime time.Time) {
 }
 
 func AddHitCount(path string) {
+	go Stats("cachehit")
 	if dbConn == nil {
 		log.Printf("db error : connection is nil")
 		return
@@ -82,5 +83,37 @@ func CacheExists(path string) bool {
 		return false
 	} else {
 		return true
+	}
+}
+
+func Stats(stat_class string) {
+	log.Printf("Stats : %v", stat_class)
+	if dbConn == nil {
+		log.Printf("db error : connection is nil")
+		return
+	}
+	now := time.Now()
+	ns := now.Format("2006-01-02")
+	var count int64
+	rows, err := dbConn.Query("select count(*) from gitcache_stats where stime = ?", ns)
+	if err != nil {
+		log.Printf("db error : %v", err)
+		return
+	}
+	defer rows.Close()
+	for rows.Next() {
+		rows.Scan(&count)
+	}
+	if count == 0 {
+		_, err = dbConn.Exec("insert into gitcache_stats (stime,cachehit,redirect,visit,vipvisit,search,imagetest) "+
+			"values (?,?,?,?,?,?,?)", ns, 0, 0, 0, 0, 0, 0)
+		if err != nil {
+			log.Printf("db error : %v", err)
+		}
+	}
+	_, err = dbConn.Exec("update gitcache_stats "+
+		" set "+stat_class+" = "+stat_class+"  + 1 where stime = ?", ns)
+	if err != nil {
+		log.Printf("db error : %v", err)
 	}
 }

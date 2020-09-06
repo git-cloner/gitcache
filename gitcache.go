@@ -21,22 +21,6 @@ type HttpParams struct {
 	IsInfoReq  bool
 }
 
-var hitCache map[string]int64
-
-func countHitCache() {
-	if hitCache == nil {
-		hitCache = make(map[string]int64)
-	}
-	now := time.Now()
-	ns := now.Format("2006-01-02")
-	v, ok := hitCache[ns]
-	if ok {
-		hitCache[ns] = v + 1
-	} else {
-		hitCache[ns] = 1
-	}
-}
-
 func parseHttpParams(r *http.Request) HttpParams {
 	u, err := url.Parse(r.RequestURI)
 	if err != nil {
@@ -358,6 +342,7 @@ func RequestHandler(basedir string) http.HandlerFunc {
 				log.Printf("check image exists: %s false\n", imagurl)
 				w.WriteHeader(404)
 			}
+			go Stats("imagetest")
 			return
 		}
 		log.Printf("client send git request: %s %s %s %s\n", r.RemoteAddr, r.Method, r.URL.Path, r.Proto)
@@ -403,7 +388,6 @@ func RequestHandler(basedir string) http.HandlerFunc {
 			}
 		} else {
 			if ifValidLocalCache(local) {
-				countHitCache()
 				log.Printf("git clone from local : %s %s\n", remote, local)
 				hdrNocache(w)
 				w.Header().Set("Content-Type", fmt.Sprintf("application/x-%s-result", httpParams.Gitservice))
@@ -417,6 +401,7 @@ func RequestHandler(basedir string) http.HandlerFunc {
 				//mirror async delay 10 second
 				log.Printf("git clone from remote : %s %s\n", remote, local)
 				go deferMirrorFromRemote(remote, local)
+				go Stats("redirect")
 			}
 		}
 		return
