@@ -343,15 +343,14 @@ func RequestHandler(basedir string) http.HandlerFunc {
 			}
 			go Stats("imagetest")
 			return
-		} else if strings.Contains(r.URL.Path, "gitcache/stat/search") {
+		} else if strings.Contains(r.URL.Path, "gitcache/stat") {
 			cors(w)
 			w.WriteHeader(200)
-			go Stats("search")
-			return
-		} else if strings.Contains(r.URL.Path, "gitcache/stat/vipvisit") {
-			cors(w)
-			w.WriteHeader(200)
-			go Stats("vipvisit")
+			if strings.Contains(r.URL.Path, "gitcache/stat/search") {
+				go Stats("search")
+			} else if strings.Contains(r.URL.Path, "gitcache/stat/vipvisit") {
+				go Stats("vipvisit")
+			}
 			return
 		}
 		log.Printf("client send git request: %s %s %s %s\n", r.RemoteAddr, r.Method, r.URL.Path, r.Proto)
