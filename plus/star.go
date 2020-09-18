@@ -23,7 +23,7 @@ func httpGet(url string) string {
 
 func GetRepoStar(w http.ResponseWriter, r *http.Request) {
 	github_token := os.Getenv("GITHUB_TOKEN")
-	url := "https://api.github.com/repos/" + strings.Replace(r.URL.RequestURI(), "/gitcache/star/github.com/", "", -1) + "?access_token=" + github_token
+	url := "https://api.github.com/repos/" + strings.Replace(r.URL.RequestURI(), "/gitcache/star/", "", -1) + "?access_token=" + github_token
 	log.Printf("get star url : %v \n", url)
 	contents := httpGet(url)
 	const reg = `"stargazers_count":\s*(\d+),`
