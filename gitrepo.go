@@ -225,6 +225,14 @@ func SaveRepsInfoToDb(repository string) {
 	SaveRepsInfo(name, path, utime)
 }
 
+func SaveRepsStarToDb(repository string) {
+	path := strings.Replace("https:/"+strings.Replace(repository, g_Basedir, "", -1), ".git", "", -1)
+	url := strings.Replace(path, "github.com", "plus.gitclone.com/gitcache/star/github.com", -1)
+	star := httpGet(url)
+	UpdateStarCount(path, star)
+	log.Println("sync repo star info:" + path)
+}
+
 func SyncLocalMirrorInfoToDB() {
 	defer func() {
 		if err := recover(); err != nil {
@@ -240,6 +248,17 @@ func SyncLocalMirrorInfoToDB() {
 	walkDir(g_Basedir, 0, SaveRepsInfoToDb)
 	log.Println("sync local mirror to db end")
 	_IS_SYNC_DB = false
+}
+
+func SyncRepoStarInfoToDB() {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Printf("process recover: %s\n", err)
+		}
+	}()
+	log.Println("sync repo star info begin")
+	walkDir(g_Basedir, 0, SaveRepsStarToDb)
+	log.Println("sync repo star info end")
 }
 
 func GetFileModTime(path string) time.Time {
@@ -282,6 +301,10 @@ func Cron() {
 	c.AddFunc("0 0 6 * * *", func() {
 		//c.AddFunc("0 */1 * * * *", func() {
 		go SyncLocalMirrorInfoToDB()
+	})
+	//sync repo star info to db every day
+	c.AddFunc("0 0 16 * * *", func() {
+		go SyncRepoStarInfoToDB()
 	})
 	c.Start()
 	log.Println("cron start")

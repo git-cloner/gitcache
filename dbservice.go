@@ -117,3 +117,14 @@ func Stats(stat_class string) {
 		log.Printf("db error : %v", err)
 	}
 }
+
+func UpdateStarCount(path string, star string) {
+	if dbConn == nil {
+		log.Printf("db error : connection is nil")
+		return
+	}
+	_, err := dbConn.Exec("update gitcache_repos set starcount = ? where path = ?", star, path)
+	if err != nil {
+		log.Printf("db error : %v", err)
+	}
+}
