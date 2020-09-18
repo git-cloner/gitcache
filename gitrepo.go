@@ -230,7 +230,7 @@ func SaveRepsStarToDb(repository string) {
 	url := strings.Replace(path, "github.com", "plus.gitclone.com/gitcache/star", -1)
 	star := httpGet(url)
 	UpdateStarCount(path, star)
-	log.Println("sync repo star info:" + path)
+	log.Println("sync repo star info : " + url)
 }
 
 func SyncLocalMirrorInfoToDB() {
@@ -303,7 +303,7 @@ func Cron() {
 		go SyncLocalMirrorInfoToDB()
 	})
 	//sync repo star info to db every day
-	c.AddFunc("0  35 7 * * *", func() {
+	c.AddFunc("0 0 18 * * *", func() {
 		go SyncRepoStarInfoToDB()
 	})
 	c.Start()
