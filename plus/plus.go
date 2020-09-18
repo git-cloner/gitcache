@@ -138,6 +138,13 @@ func RequestHandler() http.HandlerFunc {
 			DownloadFile(w, r)
 			return
 		}
+		if strings.Contains(r.URL.Path, "gitcache/star") {
+			GetRepoStar(w, r)
+			return
+		}
+		if strings.Contains(r.URL.Path, "/favicon.ico") {
+			return
+		}
 		var realurl = preProcUrl(r.URL.RequestURI())
 		if realurl == "" {
 			log.Printf("unknown token : %v\n", r.URL.RequestURI())
