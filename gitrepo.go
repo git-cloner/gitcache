@@ -303,9 +303,10 @@ func Cron() {
 		go SyncLocalMirrorInfoToDB()
 	})
 	//sync repo star info to db every day
-	c.AddFunc("0 0 20 * * *", func() {
+	//api limit,can't get star batch
+	/*c.AddFunc("0 0 20 * * *", func() {
 		go SyncRepoStarInfoToDB()
-	})
+	})*/
 	c.Start()
 	log.Println("cron start")
 	return
