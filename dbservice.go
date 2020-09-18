@@ -119,6 +119,11 @@ func Stats(stat_class string) {
 }
 
 func UpdateStarCount(path string, star string) {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Printf("process recover: %s\n", err)
+		}
+	}()
 	if dbConn == nil {
 		log.Printf("db error : connection is nil")
 		return

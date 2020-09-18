@@ -288,6 +288,21 @@ func Cron() {
 	} else if (str == "192.168.10.56") || (str == "192.168.10.57") {
 		crontime = "0 0 1 * * *"
 	}
+	//
+	var startime = ""
+	if str == "192.168.10.54" {
+		startime = "0 0 17 * * *"
+	} else if str == "192.168.10.55" {
+		startime = "0 0 18 * * *"
+	} else if str == "192.168.10.56" {
+		startime = "0 0 19 * * *"
+	} else if str == "192.168.10.57" {
+		startime = "0 0 20 * * *"
+	} else if str == "192.168.10.19" {
+		startime = "0 0 21 * * *"
+	} else {
+		startime = "0 0 7 * * *"
+	}
 	log.Println(str + "sync from remote cron at :" + crontime)
 	c.AddFunc(crontime, func() {
 		//c.AddFunc("0 */1 * * * *", func() { //test
@@ -303,7 +318,7 @@ func Cron() {
 		go SyncLocalMirrorInfoToDB()
 	})
 	//sync repo star info to db every day
-	c.AddFunc("0 0 16 * * *", func() {
+	c.AddFunc(startime, func() {
 		go SyncRepoStarInfoToDB()
 	})
 	c.Start()
