@@ -291,17 +291,17 @@ func Cron() {
 	log.Println(str + "sync from remote cron at :" + crontime)
 	var startime = ""
 	if str == "192.168.10.54" {
-		startime = "0 0 9 * * *"
+		startime = "0 0 9 * * 6"
 	} else if str == "192.168.10.55" {
-		startime = "0 30 10 * * *"
+		startime = "0 0 11 * * 6"
 	} else if str == "192.168.10.56" {
-		startime = "0 0 12 * * *"
+		startime = "0 0 13 * * 6"
 	} else if str == "192.168.10.57" {
-		startime = "0 30 13 * * *"
+		startime = "0 0 15 * * 6"
 	} else if str == "192.168.10.19" {
-		startime = "0 0 15 * * *"
+		startime = "0 0 17 * * 6"
 	} else {
-		startime = "0 30 16 * * *"
+		startime = "0 0 19 * * 6"
 	}
 	c.AddFunc(crontime, func() {
 		//c.AddFunc("0 */1 * * * *", func() { //test
