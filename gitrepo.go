@@ -291,17 +291,17 @@ func Cron() {
 	log.Println(str + "sync from remote cron at :" + crontime)
 	var startime = ""
 	if str == "192.168.10.54" {
-		startime = "0 0 9 * * 6"
+		startime = "0 0 18 * * 1"
 	} else if str == "192.168.10.55" {
-		startime = "0 0 11 * * 6"
+		startime = "0 0 18 * * 2"
 	} else if str == "192.168.10.56" {
-		startime = "0 0 13 * * 6"
+		startime = "0 0 18 * * 3"
 	} else if str == "192.168.10.57" {
-		startime = "0 0 15 * * 6"
+		startime = "0 0 18 * * 4"
 	} else if str == "192.168.10.19" {
-		startime = "0 0 17 * * 6"
+		startime = "0 0 18 * * 5"
 	} else {
-		startime = "0 0 19 * * 6"
+		startime = "0 0 18 * * 6"
 	}
 	c.AddFunc(crontime, func() {
 		//c.AddFunc("0 */1 * * * *", func() { //test
@@ -316,7 +316,7 @@ func Cron() {
 		//c.AddFunc("0 */1 * * * *", func() {
 		go SyncLocalMirrorInfoToDB()
 	})
-	//sync repo star info to db every day
+	//sync repo star info to db every week
 	c.AddFunc(startime, func() {
 		go SyncRepoStarInfoToDB()
 	})
