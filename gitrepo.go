@@ -21,6 +21,13 @@ type LocalMirrorsInfo struct {
 	Nodes    string `json:"nodes"`
 }
 
+type RemoteRepsInfo struct {
+	Stargazers_count int64  `json:"stargazers_count"`
+	Language         string `json:"language"`
+	Description      string `json:"description"`
+	Updated_at       string `json:"updated_at"`
+}
+
 var _PATH_DEPTH = 2
 var _IS_SYNC = false
 var _REPO_COUNT int64 = 0
@@ -225,11 +232,17 @@ func SaveRepsInfoToDb(repository string) {
 	SaveRepsInfo(name, path, utime)
 }
 
-func SaveRepsStarToDb(repository string) {
+func SaveRepsDetailToDb(repository string) {
 	path := strings.Replace("https:/"+strings.Replace(repository, g_Basedir, "", -1), ".git", "", -1)
 	url := strings.Replace(path, "https://github.com", "http://plus.gitclone.com:5001/gitcache/star", -1)
-	star := httpGet(url)
-	UpdateStarCount(path, star)
+	//url := strings.Replace(path, "https://github.com", "http://127.0.0.1:5001/gitcache/star", -1)
+	remoteDetail := httpGet(url)
+	if len(remoteDetail) > 0 {
+		var remoteRepsInfo RemoteRepsInfo
+		json.Unmarshal([]byte(remoteDetail), &remoteRepsInfo)
+		updated_at, _ := time.Parse("2006-01-02T15:04:05Z", remoteRepsInfo.Updated_at)
+		UpdateReposDetail(path, remoteRepsInfo.Stargazers_count, remoteRepsInfo.Language, remoteRepsInfo.Description, updated_at)
+	}
 	log.Println("sync repo star info : " + url)
 }
 
@@ -250,14 +263,14 @@ func SyncLocalMirrorInfoToDB() {
 	_IS_SYNC_DB = false
 }
 
-func SyncRepoStarInfoToDB() {
+func SyncRepoDetailToDB() {
 	defer func() {
 		if err := recover(); err != nil {
 			log.Printf("process recover: %s\n", err)
 		}
 	}()
 	log.Println("sync repo star info begin")
-	walkDir(g_Basedir, 0, SaveRepsStarToDb)
+	walkDir(g_Basedir, 0, SaveRepsDetailToDb)
 	log.Println("sync repo star info end")
 }
 
@@ -318,7 +331,8 @@ func Cron() {
 	})
 	//sync repo star info to db every week
 	c.AddFunc(startime, func() {
-		go SyncRepoStarInfoToDB()
+		//c.AddFunc("0 */1 * * * *", func() {
+		go SyncRepoDetailToDB()
 	})
 	c.Start()
 	log.Println("cron start")
