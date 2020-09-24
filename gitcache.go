@@ -319,6 +319,9 @@ func CacheSysHandlerFunc(r *http.Request) string {
 			mirrorFromRemote(remote, local)
 		}
 		return "ok"
+	} else if strings.Contains(r.URL.Path, "gitcache/system/recommend") {
+		return GetRecommentRepos()
+
 	} else {
 		return "ok"
 	}
