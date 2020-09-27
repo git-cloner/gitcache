@@ -29,11 +29,9 @@ type RemoteRepsInfo struct {
 }
 
 var _PATH_DEPTH = 2
-var _IS_SYNC = false
 var _REPO_COUNT int64 = 0
 var _REPO_ALL_COUNT int64 = 0
 var _SYNC_PROGRESS = 0
-var _IS_SYNC_DB = false
 
 func fetchMirrorFromRemoteUnshallow(repository string) {
 	_SYNC_PROGRESS = _SYNC_PROGRESS + 1
@@ -86,16 +84,10 @@ func SyncLocalMirrorFromRemote() {
 			log.Printf("process recover: %s\n", err)
 		}
 	}()
-	if _IS_SYNC {
-		log.Println("syncing local mirror from remote,sync ignore")
-		return
-	}
 	log.Println("sync local mirror from remote begin")
-	_IS_SYNC = true
 	_SYNC_PROGRESS = 0
 	walkDir(g_Basedir, 0, fetchMirrorFromRemoteUnshallow)
 	log.Println("sync local mirror from remote end")
-	_IS_SYNC = false
 }
 
 func GetOutboundIP() net.IP {
@@ -252,15 +244,9 @@ func SyncLocalMirrorInfoToDB() {
 			log.Printf("process recover: %s\n", err)
 		}
 	}()
-	if _IS_SYNC_DB {
-		log.Println("syncing local mirror to db,sync ignore")
-		return
-	}
 	log.Println("sync local mirror to db begin")
-	_IS_SYNC_DB = true
 	walkDir(g_Basedir, 0, SaveRepsInfoToDb)
 	log.Println("sync local mirror to db end")
-	_IS_SYNC_DB = false
 }
 
 func SyncRepoDetailToDB() {
