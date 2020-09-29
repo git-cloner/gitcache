@@ -138,7 +138,7 @@ func UpdateReposDetail(path string, star int64, lang string, desc string, upt ti
 }
 
 func GetRecommentRepos() string {
-	json, _ := getJSON("select name,path from  gitcache_repos where last_recommendtime > 0 order by last_recommendtime desc limit 20")
+	json, _ := getJSON("select name,path from  gitcache_repos where last_recommendtime > 0 order by last_recommendtime desc limit 10")
 	return json
 }
 
