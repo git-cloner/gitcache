@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"log"
 	"os"
 	"time"
@@ -183,6 +182,5 @@ func getJSON(sqlString string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	fmt.Println(string(jsonData))
 	return string(jsonData), nil
 }
