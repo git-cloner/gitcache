@@ -172,7 +172,6 @@ func httpHead(url string) bool {
 }
 
 func GetLocalMirrorsInfo() string {
-	go Stats("visit")
 	if _REPO_COUNT == 0 {
 		walkDir(g_Basedir, 0, countCacheRepository)
 	}
