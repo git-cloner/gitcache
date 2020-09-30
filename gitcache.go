@@ -320,6 +320,7 @@ func CacheSysHandlerFunc(r *http.Request) string {
 		}
 		return "ok"
 	} else if strings.Contains(r.URL.Path, "gitcache/system/recommend") {
+		go Stats("visit")
 		return GetRecommentRepos()
 
 	} else {
@@ -353,8 +354,6 @@ func RequestHandler(basedir string) http.HandlerFunc {
 				go Stats("search")
 			} else if strings.Contains(r.URL.Path, "gitcache/stat/vipvisit") {
 				go Stats("vipvisit")
-			} else if strings.Contains(r.URL.Path, "gitcache/stat/visit") {
-				go Stats("visit")
 			}
 			return
 		}
