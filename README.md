@@ -7,9 +7,27 @@ use git http  protocol to proxy git clone.
 
 When the local cache does not exist, the clone request is redirected to github.com, and the mirror is created at same time(delay 10 seconds), and the next time it is cloned, then clone from the local mirror .
 
-## build
+## install golang（linux）
 
-install go environment,and
+```shell
+#download golang,use normal user,don't use sudo
+curl -O https://dl.google.com/go/go1.14.linux-amd64.tar.gz
+tar -xvf go1.14.linux-amd64.tar.gz
+## install golang
+sudo rm -fr /usr/local/go
+sudo mv go /usr/local
+mkdir goApps
+## init environment variable
+echo "export GOPATH=~/goApps" >> ~/.profile
+echo "export PATH=\$PATH:/usr/local/go/bin" >> ~/.profile
+echo "export PATH=\$PATH:\$GOPATH/bin" >> ~/.profile
+## apply variable
+source ~/.profile
+```
+
+if you use windows,download from https://golang.google.cn/dl/ and install.
+
+## build
 
 ```shell
 #clone
