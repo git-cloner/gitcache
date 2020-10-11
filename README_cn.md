@@ -25,7 +25,7 @@ source ~/.profile
 
 ## 编译
 
-安装got语言环境，clone代码，然后设置环境变量支持go的 module模式。
+clone代码，然后设置环境变量支持go的 module模式。
 
 ```shell
 #clone
