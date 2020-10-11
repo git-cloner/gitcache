@@ -19,11 +19,12 @@ func InitDb() {
 	dbConn.SetMaxOpenConns(10)
 	dbConn.SetMaxIdleConns(5)
 	_, err := dbConn.Query("select now()")
+	log.Printf("connect to db: %v ", err == nil)
 	if err != nil {
 		dbConn.Close()
 		dbConn = nil
+		log.Printf("not use db feature,but gitcache is ok, err: %v", err)
 	}
-	log.Printf("connect to db: %v , err: %v", err == nil, err)
 }
 
 func SaveRepsInfo(name string, path string, utime time.Time) {
@@ -183,4 +184,22 @@ func getJSON(sqlString string) (string, error) {
 		return "", err
 	}
 	return string(jsonData), nil
+}
+
+func CacheCount() int64 {
+	if dbConn == nil {
+		log.Printf("db error : connection is nil")
+		return 0
+	}
+	var count int64
+	rows, err := dbConn.Query("select count(*) from gitcache_repos")
+	if err != nil {
+		log.Printf("db error : %v", err)
+		return 0
+	}
+	defer rows.Close()
+	for rows.Next() {
+		rows.Scan(&count)
+	}
+	return count
 }

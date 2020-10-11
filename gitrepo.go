@@ -100,35 +100,16 @@ func GetOutboundIP() net.IP {
 	return localAddr.IP
 }
 
-func countCacheRepositoryByIP(url string) int64 {
-	var group_repos_info string
-	var ct int64 = 0
-	group_repos_info = httpGet(url)
-	if len(group_repos_info) > 0 {
-		var localMirrorsInfo LocalMirrorsInfo
-		json.Unmarshal([]byte(group_repos_info), &localMirrorsInfo)
-		ct = localMirrorsInfo.Count
-	} else {
-		ct = 0
-	}
-	return ct
-}
-
 func countAllCacheRepository() {
-	defer func() {
-		if err := recover(); err != nil {
-			log.Printf("process recover: %s\n", err)
-		}
-	}()
+	//delay 30 second,get all repo count from db
+	//if not use db,then use local cache count
 	time.Sleep(time.Duration(30) * time.Second)
-	var ct int64
-	ct = countCacheRepositoryByIP("http://192.168.10.54:5000/gitcache/system/info")
-	ct = ct + countCacheRepositoryByIP("http://192.168.10.55:5000/gitcache/system/info")
-	ct = ct + countCacheRepositoryByIP("http://192.168.10.56:5000/gitcache/system/info")
-	ct = ct + countCacheRepositoryByIP("http://192.168.10.57:5000/gitcache/system/info")
-	ct = ct + countCacheRepositoryByIP("http://192.168.10.19:5000/gitcache/system/info")
-	ct = ct + countCacheRepositoryByIP("http://192.168.10.42:5000/gitcache/system/info")
+	var ct = CacheCount()
+	if ct == 0 {
+		ct = _REPO_COUNT
+	}
 	_REPO_ALL_COUNT = ct
+	log.Printf("sync all cache repository : %v\n", _REPO_ALL_COUNT)
 }
 
 func SyncCountCacheRepository() {
@@ -139,7 +120,7 @@ func SyncCountCacheRepository() {
 	}()
 	_REPO_COUNT = 0
 	walkDir(g_Basedir, 0, countCacheRepository)
-	log.Printf("sync count cache repository : %v\n", _REPO_COUNT)
+	log.Printf("sync local cache repository : %v\n", _REPO_COUNT)
 	if _REPO_COUNT > 0 {
 		log.Printf("git remote sync: %v of %v , %.2f%%\n", _SYNC_PROGRESS, _REPO_COUNT, float64(_SYNC_PROGRESS)/float64(_REPO_COUNT)*100.00)
 	}
@@ -277,30 +258,37 @@ func GetFileModTime(path string) time.Time {
 
 func Cron() {
 	c := cron.New()
-	//sync local mirror from github.com every day
 	var ip net.IP = GetOutboundIP()
-	str := ip.String()
+	//get last part from ip
+	var str = "54"
+	sstr := strings.Split(ip.String(), ".")
+	if len(sstr) == 4 {
+		str = sstr[3]
+	}
+	//sync local mirror from github.com every day
 	var crontime = "0 0 4 * * *"
-	if (str == "192.168.10.54") || (str == "192.168.10.55") {
+	if (str == "54") || (str == "55") {
 		crontime = "0 0 22 * * *"
-	} else if (str == "192.168.10.56") || (str == "192.168.10.57") {
+	} else if (str == "56") || (str == "57") {
 		crontime = "0 0 1 * * *"
 	}
-	log.Println(str + "sync from remote cron at :" + crontime)
+	log.Println("node" + str + " sync from remote cron at :" + crontime)
+	//sync mirror info from github.com api every week
 	var startime = ""
-	if str == "192.168.10.54" {
+	if str == "54" {
 		startime = "0 0 18 * * 1"
-	} else if str == "192.168.10.55" {
+	} else if str == "55" {
 		startime = "0 0 18 * * 2"
-	} else if str == "192.168.10.56" {
+	} else if str == "56" {
 		startime = "0 0 18 * * 3"
-	} else if str == "192.168.10.57" {
+	} else if str == "57" {
 		startime = "0 0 18 * * 4"
-	} else if str == "192.168.10.19" {
+	} else if str == "19" {
 		startime = "0 0 18 * * 5"
 	} else {
 		startime = "0 0 18 * * 6"
 	}
+	log.Println("node" + str + " sync from api cron at :" + startime)
 	c.AddFunc(crontime, func() {
 		//c.AddFunc("0 */1 * * * *", func() { //test
 		go SyncLocalMirrorFromRemote()
@@ -320,6 +308,6 @@ func Cron() {
 		go SyncRepoDetailToDB()
 	})
 	c.Start()
-	log.Println("cron start")
+	log.Println("node" + str + " cron start")
 	return
 }
