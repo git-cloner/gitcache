@@ -6,6 +6,7 @@ import (
 	"errors"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -202,4 +203,25 @@ func CacheCount() int64 {
 		rows.Scan(&count)
 	}
 	return count
+}
+
+func CacheIsExpire(path string) bool {
+	if dbConn == nil {
+		log.Printf("db error : connection is nil")
+		return false
+	}
+	var count int64
+	// hit count = 0 , updated_at > 3 month ago
+	rows, err := dbConn.Query("select count(*) from gitcache_repos where path = ? and  "+
+		"hitcount = 0 and (TIMESTAMPDIFF(month,updated_at,now()) >= 3 or updated_at is null)",
+		strings.Replace(path, ".git", "", -1))
+	if err != nil {
+		log.Printf("db error : %v", err)
+		return false
+	}
+	defer rows.Close()
+	for rows.Next() {
+		rows.Scan(&count)
+	}
+	return count > 0
 }

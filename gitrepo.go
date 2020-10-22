@@ -46,6 +46,15 @@ func fetchMirrorFromRemoteUnshallow(repository string) {
 		return
 	}
 	local := repository
+	//remove expire repo  only make a log , do real remove at next commit!!!!!
+	if CacheIsExpire(remote) {
+		log.Printf("!!!!!!!!remove expire repo: %s\n", remote)
+		/*if strings.Contains(local, g_Basedir) && !(local == g_Basedir) {
+			os.RemoveAll(local)
+		}
+		return
+		*/
+	}
 	log.Printf("git remote update: %s begin\n", local)
 	err := fetchMirrorFromRemote(remote, local, "update")
 	if err == "" {
