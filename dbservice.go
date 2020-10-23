@@ -211,9 +211,9 @@ func CacheIsExpire(path string) bool {
 		return false
 	}
 	var count int64
-	// hit count = 0 , updated_at > 3 month ago
+	// hit count < 2, updated_at > 3 month ago and star < 10
 	rows, err := dbConn.Query("select count(*) from gitcache_repos where path = ? and  "+
-		"hitcount = 0 and (TIMESTAMPDIFF(month,updated_at,now()) >= 3 or updated_at is null)",
+		"hitcount < 2 and starcount < 10 and (TIMESTAMPDIFF(month,updated_at,now()) >= 3 or updated_at is null)",
 		strings.Replace(path, ".git", "", -1))
 	if err != nil {
 		log.Printf("db error : %v", err)
