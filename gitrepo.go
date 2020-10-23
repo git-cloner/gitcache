@@ -51,6 +51,7 @@ func fetchMirrorFromRemoteUnshallow(repository string) {
 		log.Printf("!!!!!!!!remove expire repo: %s\n", remote)
 		if strings.Contains(local, g_Basedir) && !(local == g_Basedir) {
 			os.RemoveAll(local)
+			RemoveCacheFromDb(remote)
 		}
 		return
 	}

@@ -225,3 +225,15 @@ func CacheIsExpire(path string) bool {
 	}
 	return count > 0
 }
+
+func RemoveCacheFromDb(path string) {
+	if dbConn == nil {
+		log.Printf("db error : connection is nil")
+		return
+	}
+	_, err := dbConn.Exec("delete from gitcache_repos where path = ?",
+		strings.Replace(path, ".git", "", -1))
+	if err != nil {
+		log.Printf("db error : %v", err)
+	}
+}
