@@ -109,8 +109,8 @@ func Stats(stat_class string) {
 		rows.Scan(&count)
 	}
 	if count == 0 {
-		_, err = dbConn.Exec("insert into gitcache_stats (stime,cachehit,redirect,visit,vipvisit,search,imagetest,githubapp) "+
-			"values (?,?,?,?,?,?,?,?)", ns, 0, 0, 0, 0, 0, 0, 0)
+		_, err = dbConn.Exec("insert into gitcache_stats (stime,cachehit,redirect,visit,vipvisit,search,imagetest,githubapp,githubdesktop) "+
+			"values (?,?,?,?,?,?,?,?,?)", ns, 0, 0, 0, 0, 0, 0, 0, 0)
 		if err != nil {
 			log.Printf("db error : %v", err)
 		}
