@@ -344,6 +344,10 @@ func RequestHandler(basedir string) http.HandlerFunc {
 				go Stats("githubapp")
 			} else if strings.Contains(r.URL.Path, "gitcache/stat/githubdesktop") {
 				go Stats("githubdesktop")
+			} else if strings.Contains(r.URL.Path, "gitcache/stat/githubcli") {
+				go Stats("githubcli")
+			} else if strings.Contains(r.URL.Path, "gitcache/stat/gitexe") {
+				go Stats("gitexe")
 			}
 			return
 		}
