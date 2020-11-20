@@ -132,10 +132,19 @@ func imageExists(url string) bool {
 	return resp.StatusCode == http.StatusOK
 }
 
+func GithubAuth(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(200)
+	log.Printf("github auth: " + r.URL.Path)
+}
+
 func RequestHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if strings.Contains(r.URL.Path, "gitcache/download") {
 			DownloadFile(w, r)
+			return
+		}
+		if strings.Contains(r.URL.Path, "gitcache/auth") {
+			GithubAuth(w, r)
 			return
 		}
 		if strings.Contains(r.URL.Path, "gitcache/star") {
