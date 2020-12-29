@@ -213,16 +213,28 @@ func SaveRepsInfoToDb(repository string) {
 	SaveRepsInfo(name, path, utime)
 }
 
+func DirSize(path string) (int64, error) {
+	var size int64
+	err := filepath.Walk(path, func(_ string, info os.FileInfo, err error) error {
+		if !info.IsDir() {
+			size += info.Size()
+		}
+		return err
+	})
+	return size, err
+}
+
 func SaveRepsDetailToDb(repository string) {
 	path := strings.Replace("https:/"+strings.Replace(repository, g_Basedir, "", -1), ".git", "", -1)
 	url := strings.Replace(path, "https://github.com", "http://plus.gitclone.com:5001/gitcache/star", -1)
+	size, _ := DirSize(repository)
 	//url := strings.Replace(path, "https://github.com", "http://127.0.0.1:5001/gitcache/star", -1)
 	remoteDetail := httpGet(url)
 	if len(remoteDetail) > 0 {
 		var remoteRepsInfo RemoteRepsInfo
 		json.Unmarshal([]byte(remoteDetail), &remoteRepsInfo)
 		updated_at, _ := time.Parse("2006-01-02T15:04:05Z", remoteRepsInfo.Updated_at)
-		UpdateReposDetail(path, remoteRepsInfo.Stargazers_count, remoteRepsInfo.Language, remoteRepsInfo.Description, updated_at)
+		UpdateReposDetail(path, remoteRepsInfo.Stargazers_count, remoteRepsInfo.Language, remoteRepsInfo.Description, updated_at, size)
 	}
 	log.Println("sync repo star info : " + url)
 }

@@ -122,7 +122,7 @@ func Stats(stat_class string) {
 	}
 }
 
-func UpdateReposDetail(path string, star int64, lang string, desc string, upt time.Time) {
+func UpdateReposDetail(path string, star int64, lang string, desc string, upt time.Time, size int64) {
 	defer func() {
 		if err := recover(); err != nil {
 			log.Printf("process recover: %s\n", err)
@@ -132,7 +132,7 @@ func UpdateReposDetail(path string, star int64, lang string, desc string, upt ti
 		log.Printf("db error : connection is nil")
 		return
 	}
-	_, err := dbConn.Exec("update gitcache_repos set starcount = ?,language = ?,description = ?,updated_at = ? where path = ?", star, lang, desc, upt, path)
+	_, err := dbConn.Exec("update gitcache_repos set starcount = ?,language = ?,description = ?,updated_at = ?,size = ? where path = ?", star, lang, desc, upt, size, path)
 	if err != nil {
 		log.Printf("db error : %v", err)
 	}
