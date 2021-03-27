@@ -8,16 +8,21 @@ import (
 
 var g_Basedir string
 var port string
+var global_ssh string
 
 func main() {
 	//log params
 	log.SetFlags(log.Lshortfile | log.LstdFlags)
 	log.SetPrefix("LOG: ")
+
 	//flag params
 	flag.StringVar(&g_Basedir, "b", "/var/gitcache", "default path: /var/gitcache")
 	flag.StringVar(&port, "p", "5000", "default port:5000")
+	flag.StringVar(&global_ssh, "ssh", "0", "default ssh:0")
+
 	flag.Parse()
-	log.Printf("cache basedir:%v , port:%v", g_Basedir, port)
+
+	log.Printf("cache basedir:%v , port:%v, ssh:%v", g_Basedir, port, global_ssh)
 	//port == 5000 gitcacher , posrt != 5000 downloader
 	//connect to db
 	InitDb()

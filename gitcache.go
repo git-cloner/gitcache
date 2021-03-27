@@ -4,6 +4,7 @@ import (
 	"compress/gzip"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -73,11 +74,58 @@ func execShell(cmd string, args []string) string {
 	return ""
 }
 
+func modifyConfig(filePath string) {
+	if global_ssh == "0" {
+		return
+	}
+
+	content, err := ioutil.ReadFile(filePath) // 读取文件的内容
+	if err != nil {
+		panic(err)
+	}
+
+	oldUrlConfig := "+refs/*:refs/*"      // 要替换url的部分
+	oldRefConfig := "https://github.com/" // 要替换ref的部分
+
+	isUrlContain := strings.Contains(string(content), oldUrlConfig)
+	isRefContain := strings.Contains(string(content), oldRefConfig)
+
+	// 两者都不包含就返回
+	if !isUrlContain && !isRefContain {
+		return
+	}
+
+	newContent := string(content)
+
+	if isUrlContain {
+		// fmt.Println("正在替换url的部分配置")
+		newContent = strings.Replace(newContent, oldUrlConfig, "+refs/heads/*:refs/remotes/origin/*", 1)
+	}
+
+	if isRefContain {
+		// fmt.Println("正在替换ref的部分配置")
+		newContent = strings.Replace(newContent, oldRefConfig, "git@github.com:", 1)
+	}
+
+	file, err := os.Create(filePath)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	n, err := io.WriteString(file, newContent) // 写入文件
+	if err != nil {
+		fmt.Println(n, err)
+	}
+	file.Close()
+}
+
 func fetchMirrorFromRemote(remote string, local string, update string) string {
 	localLockExist, _ := PathExists(local + "/shallow.lock")
 	if localLockExist {
 		return "valid local cache error : cache is locked,please wait"
 	}
+	modifyConfig(local + "/config") // 修改config的配置
+
 	//var args = "-C " + local + " remote set-url origin " + remote
 	var err = execShell("git", []string{"-C", local, "remote", "set-url", "origin", remote})
 	if err != "" {
@@ -107,6 +155,7 @@ func PathExists(path string) (bool, error) {
 }
 
 func validLocalCache(local string) bool {
+	modifyConfig(local + "/config") // 修改config文件的配置
 	var err = execShell("git", []string{"-C", local, "remote"})
 	if err == "" {
 		return true
@@ -272,7 +321,7 @@ func rinetGitRequest(w http.ResponseWriter, r *http.Request) {
 	p := make([]byte, 20480)
 	for {
 		n_read, err := resp.Body.Read(p)
-		//log.Printf("clone from github.com direct : %v,%v\n", url, n_read)
+		// log.Printf("clone from github.com direct : %v,%v\n", url, n_read)
 		if n_read > 0 {
 			n_write, err := w.Write(p[:n_read])
 			if err != nil {
