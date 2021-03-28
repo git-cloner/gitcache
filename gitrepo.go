@@ -41,9 +41,11 @@ func fetchMirrorFromRemoteUnshallow(repository string) {
 	}
 	remote := "https:/" + strings.Replace(repository, g_Basedir, "", -1)
 	//avoid public repository change to private,git remote update will be hung
-	if !httpHead(remote) {
-		log.Printf("git remote update: %s %s\n", remote, "remote not exists")
-		return
+	if global_ssh == "0" {
+		if !httpHead(remote) {
+			log.Printf("git remote update: %s %s\n", remote, "remote not exists")
+			return
+		}
 	}
 	local := repository
 	//remove expire repo  only make a log , do real remove at next commit!!!!!

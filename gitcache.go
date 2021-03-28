@@ -79,18 +79,18 @@ func modifyConfig(filePath string) {
 		return
 	}
 
-	content, err := ioutil.ReadFile(filePath) // 读取文件的内容
+	content, err := ioutil.ReadFile(filePath) // read config file
 	if err != nil {
 		panic(err)
 	}
 
-	oldUrlConfig := "+refs/*:refs/*"      // 要替换url的部分
-	oldRefConfig := "https://github.com/" // 要替换ref的部分
+	oldRefConfig := "+refs/*:refs/*"      // old ref
+	oldUrlConfig := "https://github.com/" // old url
 
 	isUrlContain := strings.Contains(string(content), oldUrlConfig)
 	isRefContain := strings.Contains(string(content), oldRefConfig)
 
-	// 两者都不包含就返回
+	// two part is not include
 	if !isUrlContain && !isRefContain {
 		return
 	}
@@ -98,13 +98,11 @@ func modifyConfig(filePath string) {
 	newContent := string(content)
 
 	if isUrlContain {
-		// fmt.Println("正在替换url的部分配置")
-		newContent = strings.Replace(newContent, oldUrlConfig, "+refs/heads/*:refs/remotes/origin/*", 1)
+		newContent = strings.Replace(newContent, oldRefConfig, "+refs/heads/*:refs/remotes/origin/*", 1)
 	}
 
 	if isRefContain {
-		// fmt.Println("正在替换ref的部分配置")
-		newContent = strings.Replace(newContent, oldRefConfig, "git@github.com:", 1)
+		newContent = strings.Replace(newContent, oldUrlConfig, "git@github.com:", 1)
 	}
 
 	file, err := os.Create(filePath)
@@ -112,7 +110,7 @@ func modifyConfig(filePath string) {
 		fmt.Println(err)
 	}
 
-	n, err := io.WriteString(file, newContent) // 写入文件
+	n, err := io.WriteString(file, newContent) // write config file
 	if err != nil {
 		fmt.Println(n, err)
 	}
@@ -124,8 +122,11 @@ func fetchMirrorFromRemote(remote string, local string, update string) string {
 	if localLockExist {
 		return "valid local cache error : cache is locked,please wait"
 	}
-	modifyConfig(local + "/config") // 修改config的配置
+	modifyConfig(local + "/config") //modify config from https to ssh
 
+	if global_ssh == "1" {
+		remote = strings.Replace(remote, "https://github.com/", "git@github.com:", 1)
+	}
 	//var args = "-C " + local + " remote set-url origin " + remote
 	var err = execShell("git", []string{"-C", local, "remote", "set-url", "origin", remote})
 	if err != "" {
