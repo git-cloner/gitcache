@@ -290,10 +290,20 @@ func Cron() {
 	}
 	//sync local mirror from github.com every day
 	var crontime = "0 0 4 * * *"
-	if (str == "54") || (str == "55") {
+	if str == "54" {
 		crontime = "0 0 22 * * *"
-	} else if (str == "56") || (str == "57") {
+	} else if str == "55" {
 		crontime = "0 0 1 * * *"
+	} else if str == "56" {
+		crontime = "0 0 4 * * *"
+	} else if str == "57" {
+		crontime = "0 0 7 * * *"
+	} else if str == "58" {
+		crontime = "0 0 10 * * *"
+	} else if str == "42" {
+		crontime = "0 0 13 * * *"
+	} else {
+		crontime = "0 0 16 * * *"
 	}
 	log.Println("node" + str + " sync from remote cron at :" + crontime)
 	//sync mirror info from github.com api every week
@@ -306,10 +316,12 @@ func Cron() {
 		startime = "0 0 18 * * 3"
 	} else if str == "57" {
 		startime = "0 0 18 * * 4"
-	} else if str == "19" {
+	} else if str == "58" {
 		startime = "0 0 18 * * 5"
-	} else {
+	} else if str == "19" {
 		startime = "0 0 18 * * 6"
+	} else {
+		startime = "0 0 18 * * 7"
 	}
 	log.Println("node" + str + " sync from api cron at :" + startime)
 	c.AddFunc(crontime, func() {

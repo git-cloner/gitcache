@@ -49,6 +49,12 @@ go build
 ./gitcache  -b /var/gitcache
 #windows
 gitcache -b d:\temp
+#重要提醒
+用HTTPS git remote update 非常困难,好消息是可以用ssh,比如：
+gitcache -ssh 1 -b /var/gitcache
+使用之前要配好ssh,并执行以下命令将私钥加到高速缓存
+eval $(ssh-agent -s)
+ssh-add ~/.ssh/id_rsa
 ```
 
  

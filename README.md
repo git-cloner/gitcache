@@ -51,6 +51,12 @@ go build
 ./gitcache  -b /var/gitcache
 #windows
 gitcache -b d:\temp
+#important hint
+Using HTTPS git remote update is very difficult,so you can use ssh,such as
+gitcache -ssh 1 -b /var/gitcache
+before use ssh,please config ssh first,and execute
+eval $(ssh-agent -s)
+ssh-add ~/.ssh/id_rsa
 ```
 
  

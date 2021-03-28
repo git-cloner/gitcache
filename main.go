@@ -19,7 +19,9 @@ func main() {
 	flag.StringVar(&g_Basedir, "b", "/var/gitcache", "default path: /var/gitcache")
 	flag.StringVar(&port, "p", "5000", "default port:5000")
 	flag.StringVar(&global_ssh, "ssh", "0", "default ssh:0")
-
+	//if set -ssh 1 ,please
+	//eval $(ssh-agent -s)
+	//ssh-add ~/.ssh/id_rsa
 	flag.Parse()
 
 	log.Printf("cache basedir:%v , port:%v, ssh:%v", g_Basedir, port, global_ssh)
