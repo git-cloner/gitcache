@@ -161,7 +161,7 @@ func PathExists(path string) (bool, error) {
 
 func validLocalCache(local string) bool {
 	var err = execShell("git", []string{"-C", local, "remote"})
-	modifyConfig(local + "/config") // 修改config文件的配置，没有必要
+	modifyConfig(local + "/config") //modify config from https to ssh
 	if err == "" {
 		return true
 	} else {
