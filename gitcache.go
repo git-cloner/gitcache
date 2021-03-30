@@ -98,11 +98,11 @@ func modifyConfig(filePath string) {
 	newContent := string(content)
 
 	if isUrlContain {
-		newContent = strings.Replace(newContent, oldRefConfig, "+refs/heads/*:refs/remotes/origin/*", 1)
+		newContent = strings.Replace(newContent, oldUrlConfig, "git@github.com:", 1)
 	}
 
 	if isRefContain {
-		newContent = strings.Replace(newContent, oldUrlConfig, "git@github.com:", 1)
+		newContent = strings.Replace(newContent, oldRefConfig, "+refs/heads/*:refs/remotes/origin/*", 1)
 	}
 
 	file, err := os.Create(filePath)
@@ -123,7 +123,6 @@ func fetchMirrorFromRemote(remote string, local string, update string) string {
 		return "valid local cache error : cache is locked,please wait"
 	}
 	modifyConfig(local + "/config") //modify config from https to ssh
-
 	if global_ssh == "1" {
 		remote = strings.Replace(remote, "https://github.com/", "git@github.com:", 1)
 	}
@@ -141,7 +140,12 @@ func fetchMirrorFromRemote(remote string, local string, update string) string {
 }
 
 func cloneMirrorFromRemote(remote string, local string) string {
-	return execShell("git", []string{"clone", "--depth=1", "--mirror", "--progress", remote, local})
+	if global_ssh == "1" {
+		remote = strings.Replace(remote, "https://github.com/", "git@github.com:", 1)
+	}
+	result := execShell("git", []string{"clone", "--depth=1", "--mirror", "--progress", remote, local})
+	modifyConfig(local + "/config") //modify config from https to ssh
+	return result
 }
 
 func PathExists(path string) (bool, error) {
@@ -156,8 +160,8 @@ func PathExists(path string) (bool, error) {
 }
 
 func validLocalCache(local string) bool {
-	modifyConfig(local + "/config") // 修改config文件的配置
 	var err = execShell("git", []string{"-C", local, "remote"})
+	modifyConfig(local + "/config") // 修改config文件的配置，没有必要
 	if err == "" {
 		return true
 	} else {
