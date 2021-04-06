@@ -370,6 +370,7 @@ func CacheSysHandlerFunc(r *http.Request) string {
 
 func RequestHandler(basedir string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*") // resolve cors
 		if strings.Contains(r.URL.Path, "gitcache/system") || strings.Contains(r.URL.Path, "/favicon.ico") {
 			cors(w)
 			w.WriteHeader(200)
