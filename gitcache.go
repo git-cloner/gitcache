@@ -457,11 +457,11 @@ func RequestHandler(basedir string) http.HandlerFunc {
 				go AddHitCount(strings.Replace(remote, ".git", "", -1))
 			} else {
 				hdrNocache(w)
+				//redirect to github.com clone
+				rinetGitRequest(w, r)
 				//mirror async delay 10 second
 				log.Printf("make mirror from remote : %s %s\n", remote, local)
 				go deferMirrorFromRemote(remote, local)
-				//redirect to github.com clone
-				rinetGitRequest(w, r)
 				go Stats("redirect")
 			}
 		}
