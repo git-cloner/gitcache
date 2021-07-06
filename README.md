@@ -58,7 +58,7 @@ before use ssh,please config ssh first,and execute
 eval $(ssh-agent -s)
 ssh-add ~/.ssh/id_rsa
 #database support
-if using database(mysql) support,please set up environment variable
+if using database(mysql) support(Not necessary),please set up environment variable
 export MYSQL_DSN=dbuser:password@tcp(IP:3306)/dbname
 ```
 
