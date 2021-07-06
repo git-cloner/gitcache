@@ -55,6 +55,9 @@ gitcache -ssh 1 -b /var/gitcache
 使用之前要配好ssh,并执行以下命令将私钥加到高速缓存
 eval $(ssh-agent -s)
 ssh-add ~/.ssh/id_rsa
+#数据库支持
+如果要使用数据库存储缓存的一些信息（非必需）,需要设置环境变量
+export MYSQL_DSN=dbuser:password@tcp(IP:3306)/dbname
 ```
 
  
