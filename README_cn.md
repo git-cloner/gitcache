@@ -74,9 +74,17 @@ https://gitclone.com/
 
 ## 客户端支持
 
-从  https://github.com/git-cloner/gitcache/releases/download/v0.1/cgit-release.zip 下载，只要把git换成cgit即可加速，非常简单。
+从  https://github.com/git-cloner/gitcache/releases/download/v0.1/cgit-release.zip 下载，只要把git换成cgit即可加速，非常简单。   
+或者通过命令行将`cgit`客户端程序安装到`GOBIN`目录下
+```sh
+go install github.com/git-cloner/gitcache/cgit@latest
+```
 
+```sh
 cgit clone https://github.com/git-cloner/gitcache
+# 或
+cgit clone git@github.com:git-cloner/gitcache.git
+```
 
 ## 区块链技术
 
