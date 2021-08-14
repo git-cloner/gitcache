@@ -82,8 +82,6 @@ go install github.com/git-cloner/gitcache/cgit@latest
 
 ```sh
 cgit clone https://github.com/git-cloner/gitcache
-# 或
-cgit clone git@github.com:git-cloner/gitcache.git
 ```
 
 ## 区块链技术
