@@ -5,7 +5,7 @@ github.com clone cache
 
 use git http  protocol to proxy git clone.
 
-When the local cache does not exist, the clone request is redirected to github.com, and the mirror is created at same time(delay 10 seconds), and the next time it is cloned, then clone from the local mirror .
+When the local cache does not exist, the clone request is redirected to github.com, and the mirror is created at same time(delay 10 seconds), and it is cloned the next time, then clone from the local mirror .
 
 ## install golang（linux）
 
