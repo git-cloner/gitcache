@@ -10,8 +10,14 @@ import (
 	"strings"
 )
 
-func httpGet(url string) string {
-	resp, err := http.Get(url)
+func httpGet(url string, token string) string {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		log.Println(err)
+		return ""
+	}
+	req.Header.Set("Authorization", "token "+token)
+	resp, err := (&http.Client{}).Do(req)
 	if err != nil {
 		log.Println(err)
 		return ""
@@ -25,9 +31,9 @@ func GetRepoStar(w http.ResponseWriter, r *http.Request) {
 	//sample: https://api.github.com/repos/git-cloner/gitcache
 	//test : http://127.0.0.1:5001/gitcache/star/git-cloner/gitcache
 	github_token := os.Getenv("GITHUB_TOKEN")
-	url := "https://api.github.com/repos/" + strings.Replace(r.URL.RequestURI(), "/gitcache/star/", "", -1) + "?access_token=" + github_token
+	url := "https://api.github.com/repos/" + strings.Replace(r.URL.RequestURI(), "/gitcache/star/", "", -1)
 	log.Printf("get star url : %v \n", url)
-	contents := httpGet(url)
+	contents := httpGet(url, github_token)
 	//get stat
 	const reg = `"stargazers_count":\s*(\d+),`
 	compile := regexp.MustCompile(reg)
