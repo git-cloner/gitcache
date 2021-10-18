@@ -58,6 +58,9 @@ ssh-add ~/.ssh/id_rsa
 #数据库支持
 如果要使用数据库存储缓存的一些信息（非必需）,需要设置环境变量
 export MYSQL_DSN=dbuser:password@tcp(IP:3306)/dbname
+#删除空文件夹
+cd ~/repos/gitcache/github.com
+find  -maxdepth 1 -type  d -empty | xargs -n 1 rm -fr
 ```
 
  
