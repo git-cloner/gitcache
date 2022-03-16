@@ -298,7 +298,7 @@ func execShelldPipe(cmd string, args []string, w http.ResponseWriter, r *http.Re
 	command.Wait()
 }
 
-func rinetGitRequest(w http.ResponseWriter, r *http.Request) {
+func rinetGitRequest(w http.ResponseWriter, r *http.Request) bool {
 	url := "https:/" + r.URL.RequestURI()
 	log.Printf("redirect to github.com : %v,%v\n", url, r.Method)
 	client := &http.Client{}
@@ -310,7 +310,7 @@ func rinetGitRequest(w http.ResponseWriter, r *http.Request) {
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		return
+		return false
 	}
 	defer resp.Body.Close()
 	for k, v := range resp.Header {
@@ -341,6 +341,7 @@ func rinetGitRequest(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 	}
+	return true
 }
 
 func hdrNocache(w http.ResponseWriter) {
@@ -445,7 +446,11 @@ func RequestHandler(basedir string) http.HandlerFunc {
 			} else {
 				hdrNocache(w)
 				//redirect to github.com clone
-				rinetGitRequest(w, r)
+				var req = rinetGitRequest(w, r)
+				if !req {
+					log.Printf("make mirror from remote : %s %s\n", remote, local)
+					go deferMirrorFromRemote(remote, local)
+				}
 			}
 		} else {
 			if ifValidLocalCache(local) {
