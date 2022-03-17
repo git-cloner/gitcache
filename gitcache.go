@@ -226,7 +226,7 @@ func deferMirrorFromRemote(remote string, local string) bool {
 			log.Printf("process recover: %s\n", err)
 		}
 	}()
-	time.Sleep(time.Duration(10) * time.Second)
+	time.Sleep(time.Duration(60) * time.Second)
 	localExists := mirrorFromRemote(remote, local)
 	if !localExists {
 		time.Sleep(time.Duration(10) * time.Second)
@@ -445,12 +445,11 @@ func RequestHandler(basedir string) http.HandlerFunc {
 				w.Write(refs)
 			} else {
 				hdrNocache(w)
+				//make mirror fist
+				log.Printf("make mirror from remote : %s %s\n", remote, local)
+				go deferMirrorFromRemote(remote, local)
 				//redirect to github.com clone
-				var req = rinetGitRequest(w, r)
-				if !req {
-					log.Printf("make mirror from remote : %s %s\n", remote, local)
-					go deferMirrorFromRemote(remote, local)
-				}
+				rinetGitRequest(w, r)
 			}
 		} else {
 			if ifValidLocalCache(local) {
