@@ -406,6 +406,10 @@ func RequestHandler(basedir string) http.HandlerFunc {
 				go Stats("gitexe")
 			}
 			return
+		} else if strings.Contains(r.URL.Path, "Project-Gutenberg") { //Project-Gutenberg repository is too big
+			cors(w)
+			w.WriteHeader(403)
+			return
 		}
 		log.Printf("client send git request: %s %s %s %s\n", r.RemoteAddr, r.Method, r.URL.Path, r.Proto)
 		var httpParams HttpParams = parseHttpParams(r)
