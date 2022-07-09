@@ -406,7 +406,7 @@ func RequestHandler(basedir string) http.HandlerFunc {
 				go Stats("gitexe")
 			}
 			return
-		} else if strings.Contains(r.URL.Path, "Project-Gutenberg") { //Project-Gutenberg repository is too big
+		} else if strings.Contains(r.URL.Path, "Project-Gutenberg") || strings.Contains(r.URL.Path, "he1pu/JDHelp") { //Project-Gutenberg repository is too big
 			cors(w)
 			w.WriteHeader(403)
 			return
