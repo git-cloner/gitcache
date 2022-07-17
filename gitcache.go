@@ -369,6 +369,15 @@ func CacheSysHandlerFunc(r *http.Request) string {
 	}
 }
 
+func IsBlacklist(url string) bool {
+	for _, v := range global_blacklist {
+		if strings.Contains(url, v) {
+			return true
+		}
+	}
+	return false
+}
+
 func RequestHandler(basedir string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*") // resolve cors
@@ -406,7 +415,7 @@ func RequestHandler(basedir string) http.HandlerFunc {
 				go Stats("gitexe")
 			}
 			return
-		} else if strings.Contains(r.URL.Path, "Project-Gutenberg") || strings.Contains(r.URL.Path, "he1pu/JDHelp") { //Project-Gutenberg repository is too big
+		} else if IsBlacklist(r.URL.Path) {
 			cors(w)
 			w.WriteHeader(403)
 			return

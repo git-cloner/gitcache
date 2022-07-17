@@ -4,11 +4,27 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"os"
+	"strings"
 )
 
 var g_Basedir string
 var port string
 var global_ssh string
+var global_blacklist []string
+
+func ReadBlacklist() {
+	_, err := os.Stat("blacklist.txt")
+	if err == nil {
+		s, err := os.ReadFile("blacklist.txt")
+		if err != nil {
+			log.Fatal(err)
+		}
+		global_blacklist = strings.Split(string(s), "\r\n")
+	} else {
+		global_blacklist = []string{}
+	}
+}
 
 func main() {
 	//log params
@@ -30,6 +46,8 @@ func main() {
 	InitDb()
 	//cron
 	Cron()
+	//read blacklist
+	ReadBlacklist()
 	//listen
 	http.HandleFunc("/", RequestHandler(g_Basedir))
 	address := ":" + port
