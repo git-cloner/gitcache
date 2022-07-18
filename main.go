@@ -32,7 +32,7 @@ func ReadBlacklist() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		global_blacklist = strings.Split(string(s), "\r\n")
+		global_blacklist = strings.Split(string(s), "\n")
 	} else {
 		global_blacklist = []string{}
 	}
