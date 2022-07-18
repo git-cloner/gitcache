@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -16,7 +17,7 @@ var global_blacklist []string
 func ReadBlacklist() {
 	_, err := os.Stat("blacklist.txt")
 	if err == nil {
-		s, err := os.ReadFile("blacklist.txt")
+		s, err := ioutil.ReadFile("blacklist.txt")
 		if err != nil {
 			log.Fatal(err)
 		}
