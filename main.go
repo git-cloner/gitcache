@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -14,10 +15,20 @@ var port string
 var global_ssh string
 var global_blacklist []string
 
+func getCurrentAbPathByExecutable() string {
+	exePath, err := os.Executable()
+	if err != nil {
+		log.Fatal(err)
+	}
+	res, _ := filepath.EvalSymlinks(filepath.Dir(exePath))
+	return res
+}
+
 func ReadBlacklist() {
-	_, err := os.Stat("blacklist.txt")
+	filepath := getCurrentAbPathByExecutable() + "/blacklist.txt"
+	_, err := os.Stat(filepath)
 	if err == nil {
-		s, err := ioutil.ReadFile("blacklist.txt")
+		s, err := ioutil.ReadFile(filepath)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -25,6 +36,7 @@ func ReadBlacklist() {
 	} else {
 		global_blacklist = []string{}
 	}
+	log.Printf("blacklist:%v", global_blacklist)
 }
 
 func main() {
