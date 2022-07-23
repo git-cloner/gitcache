@@ -3,6 +3,8 @@
 
 github.com clone 缓存，使用git的http协议代理git clone操作，当本地镜像（缓存）未建立前，clone操作被重定向到github.com，镜像会延时10秒开始创建，缓存建立后，下次clone（其他开发者）时就会利用到本地缓存，每晚自动从github.com更新镜像。
 
+现已支持分支 (git clone -b branchname) 
+
 ## 安装golang环境（linux）
 
 ```shell
@@ -70,6 +72,8 @@ find  -maxdepth 1 -type  d -empty | xargs -n 1 rm -fr
 简单修改url即可。
 
 git clone http://127.0.0.1:5000/github.com/git-cloner/gitcache
+
+git clone  http://127.0.0.1:5000/github.com/git-cloner/gitcache -b branch
 
 ## 利用gitcache技术建立的网站
 

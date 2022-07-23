@@ -233,6 +233,9 @@ func deferMirrorFromRemote(remote string, local string) bool {
 		BroadCastGitCloneCommandToChain(remote)
 	}
 	go SaveRepsInfoToDb(local)
+	//do remote update at once,support branch (git clone -b)
+	time.Sleep(time.Duration(3) * time.Second)
+	go fetchMirrorFromRemoteUnshallow(local)
 	return localExists
 }
 

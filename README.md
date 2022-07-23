@@ -7,6 +7,8 @@ use git http  protocol to proxy git clone.
 
 When the local cache does not exist, the clone request is redirected to github.com, and the mirror is created at same time(delay 10 seconds), and it is cloned the next time, then clone from the local mirror .
 
+new support branch (git clone -b branchname) 
+
 ## install golang（linux）
 
 ```shell
@@ -67,6 +69,8 @@ export MYSQL_DSN=dbuser:password@tcp(IP:3306)/dbname
 ## usage
 
 git clone http://127.0.0.1:5000/github.com/git-cloner/gitcache
+
+git clone  http://127.0.0.1:5000/github.com/git-cloner/gitcache -b branch
 
 ## homepage
 
