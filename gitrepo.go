@@ -65,6 +65,24 @@ func fetchMirrorFromRemoteUnshallow(repository string) {
 	log.Printf("git remote update: %s %s\n", local, err)
 }
 
+func fetchMirrorFromRemoteUnshallowA(repository string) {
+	remote := "https:/" + strings.Replace(repository, g_Basedir, "", -1)
+	//avoid public repository change to private,git remote update will be hung
+	if global_ssh == "0" {
+		if !httpHead(remote) {
+			log.Printf("git remote update: %s %s\n", remote, "remote not exists")
+			return
+		}
+	}
+	local := repository
+	log.Printf("git remote update: %s begin\n", local)
+	err := fetchMirrorFromRemote(remote, local, "update")
+	if err == "" {
+		err = "ok"
+	}
+	log.Printf("git remote update: %s %s\n", local, err)
+}
+
 func countCacheRepository(repository string) {
 	_REPO_COUNT++
 }
