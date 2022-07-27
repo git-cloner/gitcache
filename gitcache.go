@@ -81,7 +81,8 @@ func modifyConfig(filePath string) {
 
 	content, err := ioutil.ReadFile(filePath) // read config file
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		return
 	}
 
 	oldRefConfig := "+refs/*:refs/*"      // old ref
