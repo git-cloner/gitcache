@@ -375,7 +375,7 @@ func CacheSysHandlerFunc(r *http.Request) string {
 
 func IsBlacklist(url string) bool {
 	for _, v := range global_blacklist {
-		if strings.Contains(url, v) {
+		if strings.Contains(url, v) && strings.Trim(v, " ") != "" {
 			return true
 		}
 	}
