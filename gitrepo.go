@@ -347,7 +347,7 @@ func Cron() {
 		go SyncLocalMirrorFromRemote()
 	})
 	//calc local mirror count every 10 min
-	c.AddFunc("0 */10 * * * *", func() {
+	c.AddFunc("0 */30 * * * *", func() {
 		go SyncCountCacheRepository()
 	})
 	//sync local mirror info to db every day
